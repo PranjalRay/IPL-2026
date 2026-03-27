@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPL 2026 | Father vs Son</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <style>
+        :root { --bg: #020617; --card: #1e293b; --text: #f8fafc; --accent: #ffd700; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; padding-top: 80px; }
+        header { position: fixed; top: 0; left: 0; right: 0; background: #0f172a; padding: 15px; border-bottom: 2px solid var(--accent); display: flex; justify-content: space-around; z-index: 100; }
+        .match-card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 10px; border-left: 5px solid var(--accent); }
+        .btn { padding: 10px; border: none; border-radius: 5px; cursor: pointer; background: #334155; color: white; width: 45%; }
+        .btn.active { background: var(--accent); color: black; font-weight: bold; }
+        .score-widget { margin-bottom: 15px; border-radius: 8px; overflow: hidden; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>FATHER: <span id="f-wins">0</span></div>
+    <div>SON: <span id="s-wins">0</span></div>
+    <button onclick="openAdmin()" style="background:none; border:none; color:white;">🏆</button>
+</header>
+
+<div class="score-widget">
+    <iframe src="https://cricketdata.org/widgets/scrolling-score-bar/" style="width:100%; height:50px; border:none;" scrolling="no"></iframe>
+</div>
+
+<div id="matches-container"></div>
+
+<script>
+// REPLACE THESE WITH YOUR FIREBASE SECRETS FROM YOUR CONSOLE
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    databaseURL: "YOUR_DATABASE_URL",
+    projectId: "YOUR_PROJECT_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+let currentUser = prompt("Who is using this? (Enter 'Father' or 'Son')") || "Son";
+
+const matches = [
+    {id:1, date:"2026-03-28", h:"Royal Challengers Bengaluru", a:"Sunrisers Hyderabad", v:"Bengaluru"},
+    {id:2, date:"2026-03-29", h:"Mumbai Indians", a:"Kolkata Knight Riders", v:"Mumbai"},
+    {id:3, date:"2026-03-30", h:"Rajasthan Royals", a:"Chennai Super Kings", v:"Guwahati"},
+    {id:4, date:"2026-03-31", h:"Punjab Kings", a:"Gujarat Titans", v:"New Chandigarh"},
+    {id:5, date:"2026-04-01", h:"Lucknow Super Giants", a:"Delhi Capitals", v:"Lucknow"},
+    {id:6, date:"2026-04-02", h:"Kolkata Knight Riders", a:"Sunrisers Hyderabad", v:"Kolkata"},
+    {id:7, date:"2026-04-03", h:"Chennai Super Kings", a:"Punjab Kings", v:"Chennai"},
+    {id:8, date:"2026-04-04", h:"Delhi Capitals", a:"Mumbai Indians", v:"Delhi"},
+    {id:9, date:"2026-04-04", h:"Gujarat Titans", a:"Rajasthan Royals", v:"Ahmedabad"},
+    {id:10, date:"2026-04-05", h:"Sunrisers Hyderabad", a:"Lucknow Super Giants", v:"Hyderabad"},
+    {id:11, date:"2026-04-05", h:"Royal Challengers Bengaluru", a:"Chennai Super Kings", v:"Bengaluru"},
+    {id:12, date:"2026-04-06", h:"Kolkata Knight Riders", a:"Punjab Kings", v:"Kolkata"},
+    {id:13, date:"2026-04-07", h:"Rajasthan Royals", a:"Mumbai Indians", v:"Guwahati"},
+    {id:14, date:"2026-04-08", h:"Delhi Capitals", a:"Gujarat Titans", v:"Delhi"},
+    {id:15, date:"2026-04-09", h:"Kolkata Knight Riders", a:"Lucknow Super Giants", v:"Kolkata"},
+    {id:16, date:"2026-04-10", h:"Rajasthan Royals", a:"Royal Challengers Bengaluru", v:"Guwahati"},
+    {id:17, date:"2026-04-11", h:"Punjab Kings", a:"Sunrisers Hyderabad", v:"New Chandigarh"},
+    {id:18, date:"2026-04-11", h:"Chennai Super Kings", a:"Delhi Capitals", v:"Chennai"},
+    {id:19, date:"2026-04-12", h:"Lucknow Super Giants", a:"Gujarat Titans", v:"Lucknow"},
+    {id:20, date:"2026-04-12", h:"Mumbai Indians", a:"Royal Challengers Bengaluru", v:"Mumbai"},
+    {id:21, date:"2026-04-13", h:"Sunrisers Hyderabad", a:"Rajasthan Royals", v:"Hyderabad"},
+    {id:22, date:"2026-04-14", h:"Chennai Super Kings", a:"Kolkata Knight Riders", v:"Chennai"},
+    {id:23, date:"2026-04-15", h:"Royal Challengers Bengaluru", a:"Lucknow Super Giants", v:"Bengaluru"},
+    {id:24, date:"2026-04-16", h:"Mumbai Indians", a:"Punjab Kings", v:"Mumbai"},
+    {id:25, date:"2026-04-17", h:"Gujarat Titans", a:"Kolkata Knight Riders", v:"Ahmedabad"},
+    {id:26, date:"2026-04-18", h:"Royal Challengers Bengaluru", a:"Delhi Capitals", v:"Bengaluru"},
+    {id:27, date:"2026-04-18", h:"Sunrisers Hyderabad", a:"Chennai Super Kings", v:"Hyderabad"},
+    {id:28, date:"2026-04-19", h:"Kolkata Knight Riders", a:"Rajasthan Royals", v:"Kolkata"},
+    {id:29, date:"2026-04-19", h:"Punjab Kings", a:"Lucknow Super Giants", v:"New Chandigarh"},
+    {id:30, date:"2026-04-20", h:"Gujarat Titans", a:"Mumbai Indians", v:"Ahmedabad"},
+    {id:31, date:"2026-04-21", h:"Sunrisers Hyderabad", a:"Delhi Capitals", v:"Hyderabad"},
+    {id:32, date:"2026-04-22", h:"Lucknow Super Giants", a:"Rajasthan Royals", v:"Lucknow"},
+    {id:33, date:"2026-04-23", h:"Mumbai Indians", a:"Chennai Super Kings", v:"Mumbai"},
+    {id:34, date:"2026-04-24", h:"Royal Challengers Bengaluru", a:"Gujarat Titans", v:"Bengaluru"},
+    {id:35, date:"2026-04-25", h:"Delhi Capitals", a:"Punjab Kings", v:"Delhi"},
+    {id:36, date:"2026-04-25", h:"Rajasthan Royals", a:"Sunrisers Hyderabad", v:"Jaipur"},
+    {id:37, date:"2026-04-26", h:"Gujarat Titans", a:"Chennai Super Kings", v:"Ahmedabad"},
+    {id:38, date:"2026-04-26", h:"Lucknow Super Giants", a:"Kolkata Knight Riders", v:"Lucknow"},
+    {id:39, date:"2026-04-27", h:"Delhi Capitals", a:"Royal Challengers Bengaluru", v:"Delhi"},
+    {id:40, date:"2026-04-28", h:"Punjab Kings", a:"Rajasthan Royals", v:"New Chandigarh"},
+    {id:41, date:"2026-04-29", h:"Mumbai Indians", a:"Sunrisers Hyderabad", v:"Mumbai"},
+    {id:42, date:"2026-04-30", h:"Gujarat Titans", a:"Royal Challengers Bengaluru", v:"Ahmedabad"},
+    {id:43, date:"2026-05-01", h:"Rajasthan Royals", a:"Delhi Capitals", v:"Jaipur"},
+    {id:44, date:"2026-05-02", h:"Chennai Super Kings", a:"Mumbai Indians", v:"Chennai"},
+    {id:45, date:"2026-05-03", h:"Sunrisers Hyderabad", a:"Kolkata Knight Riders", v:"Hyderabad"},
+    {id:46, date:"2026-05-03", h:"Gujarat Titans", a:"Punjab Kings", v:"Ahmedabad"},
+    {id:47, date:"2026-05-04", h:"Mumbai Indians", a:"Lucknow Super Giants", v:"Mumbai"},
+    {id:48, date:"2026-05-05", h:"Delhi Capitals", a:"Chennai Super Kings", v:"Delhi"},
+    {id:49, date:"2026-05-06", h:"Sunrisers Hyderabad", a:"Punjab Kings", v:"Hyderabad"},
+    {id:50, date:"2026-05-07", h:"Lucknow Super Giants", a:"Royal Challengers Bengaluru", v:"Lucknow"},
+    {id:51, date:"2026-05-08", h:"Delhi Capitals", a:"Kolkata Knight Riders", v:"Delhi"},
+    {id:52, date:"2026-05-09", h:"Rajasthan Royals", a:"Gujarat Titans", v:"Jaipur"},
+    {id:53, date:"2026-05-10", h:"Chennai Super Kings", a:"Lucknow Super Giants", v:"Chennai"},
+    {id:54, date:"2026-05-10", h:"Royal Challengers Bengaluru", a:"Mumbai Indians", v:"Raipur"},
+    {id:55, date:"2026-05-11", h:"Punjab Kings", a:"Delhi Capitals", v:"Dharamshala"},
+    {id:56, date:"2026-05-12", h:"Gujarat Titans", a:"Sunrisers Hyderabad", v:"Ahmedabad"},
+    {id:57, date:"2026-05-13", h:"Royal Challengers Bengaluru", a:"Kolkata Knight Riders", v:"Raipur"},
+    {id:58, date:"2026-05-14", h:"Punjab Kings", a:"Mumbai Indians", v:"Dharamshala"},
+    {id:59, date:"2026-05-15", h:"Lucknow Super Giants", a:"Chennai Super Kings", v:"Lucknow"},
+    {id:60, date:"2026-05-16", h:"Kolkata Knight Riders", a:"Gujarat Titans", v:"Kolkata"},
+    {id:61, date:"2026-05-17", h:"Punjab Kings", a:"Royal Challengers Bengaluru", v:"Dharamshala"},
+    {id:62, date:"2026-05-17", h:"Delhi Capitals", a:"Rajasthan Royals", v:"Delhi"},
+    {id:63, date:"2026-05-18", h:"Chennai Super Kings", a:"Sunrisers Hyderabad", v:"Chennai"},
+    {id:64, date:"2026-05-19", h:"Rajasthan Royals", a:"Lucknow Super Giants", v:"Jaipur"},
+    {id:65, date:"2026-05-20", h:"Kolkata Knight Riders", a:"Mumbai Indians", v:"Kolkata"},
+    {id:66, date:"2026-05-21", h:"Chennai Super Kings", a:"Gujarat Titans", v:"Chennai"},
+    {id:67, date:"2026-05-22", h:"Sunrisers Hyderabad", a:"Royal Challengers Bengaluru", v:"Hyderabad"},
+    {id:68, date:"2026-05-23", h:"Lucknow Super Giants", a:"Punjab Kings", v:"Lucknow"},
+    {id:69, date:"2026-05-24", h:"Mumbai Indians", a:"Rajasthan Royals", v:"Mumbai"},
+    {id:70, date:"2026-05-24", h:"Kolkata Knight Riders", a:"Delhi Capitals", v:"Kolkata"}
+];
+
+function render() {
+    db.ref('ipl2026').on('value', snap => {
+        const data = snap.val() || {matches: {}};
+        let fW = 0, sW = 0;
+        
+        document.getElementById('matches-container').innerHTML = matches.map(m => {
+            const mRef = data.matches[m.id] || {};
+            const fatherPick = mRef.picks?.Father || "";
+            const sonPick = mRef.picks?.Son || "";
+            const winner = mRef.winner || "";
+
+            if(winner) {
+                if(fatherPick === winner) fW++;
+                if(sonPick === winner) sW++;
+            }
+
+            return `
+                <div class="match-card">
+                    <small>${m.date} | ${m.v}</small>
+                    <p><strong>${m.h} vs ${m.a}</strong></p>
+                    <div style="display:flex; justify-content:space-between">
+                        <button class="btn ${mRef.picks?.[currentUser] === m.h ? 'active' : ''}" onclick="pick(${m.id}, '${m.h}')">${m.h.split(' ').pop()}</button>
+                        <button class="btn ${mRef.picks?.[currentUser] === m.a ? 'active' : ''}" onclick="pick(${m.id}, '${m.a}')">${m.a.split(' ').pop()}</button>
+                    </div>
+                    ${winner ? `<p style="color:var(--accent)">Result: ${winner} won!</p>` : ''}
+                </div>`;
+        }).join('');
+        document.getElementById('f-wins').innerText = fW;
+        document.getElementById('s-wins').innerText = sW;
+    });
+}
+
+function pick(id, team) { db.ref(`ipl2026/matches/${id}/picks/${currentUser}`).set(team); }
+
+function openAdmin() {
+    const id = prompt("Enter Match ID to set result:");
+    const win = prompt("Enter Winning Team Name:");
+    if(id && win) db.ref(`ipl2026/matches/${id}/winner`).set(win);
+}
+
+render();
+</script>
+</body>
+</html>
