@@ -14,6 +14,7 @@
             --gold: #f59e0b;
             --p1-color: #00f2ff; 
             --p2-color: #ff007b;
+            --success: #10b981;
         }
         
         body { 
@@ -26,8 +27,40 @@
             color: white; 
             margin: 0; 
             padding-bottom: 80px; 
+            overflow-x: hidden;
         }
-        
+
+        /* --- NEW ANIMATIONS --- */
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 5px var(--glow-color); }
+            50% { box-shadow: 0 0 20px var(--glow-color); }
+            100% { box-shadow: 0 0 5px var(--glow-color); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        @keyframes slideUp {
+            from { transform: translate(-50%, 100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        .winner-glow { animation: neonPulse 2s infinite; }
+        .locked-pick { cursor: not-allowed !important; opacity: 0.8; }
+        .locked-pick:active { animation: shake 0.2s; }
+
+        #toast {
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+            background: var(--success); color: white; padding: 10px 20px;
+            border-radius: 30px; font-family: 'Oxanium'; font-weight: bold;
+            display: none; z-index: 3000; box-shadow: 0 0 15px var(--success);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        /* --- EXISTING STYLES --- */
         .header { 
             position: sticky; top: 0; z-index: 1000; 
             background: rgba(17, 24, 39, 0.85);
@@ -110,12 +143,12 @@
         .match-card.finished-loss { border-color: #ef4444; background: rgba(239, 68, 68, 0.15); }
 
         .team-row { display: flex; gap: 10px; margin: 15px 0; }
-        .team-btn { flex: 1; padding: 12px 5px; border: 2px solid #374151; border-radius: 8px; background: #1f2937; color: white; cursor: pointer; font-family: 'Oxanium'; font-size: 0.8rem; }
+        .team-btn { flex: 1; padding: 12px 5px; border: 2px solid #374151; border-radius: 8px; background: #1f2937; color: white; cursor: pointer; font-family: 'Oxanium'; font-size: 0.8rem; transition: 0.2s; }
         .p1-picked { border-color: var(--p1-color) !important; background: #002a2e !important; box-shadow: 0 0 12px var(--p1-color); }
         .p2-picked { border-color: var(--p2-color) !important; background: #2e001a !important; box-shadow: 0 0 12px var(--p2-color); }
 
-        .result-btn { width: 100%; padding: 12px; background: var(--gold); border: none; border-radius: 6px; font-family: 'Oxanium'; font-weight: bold; cursor: pointer; color: #060b1a; }
-        .result-btn:disabled { background: #1f2937; color: #4b5563; cursor: not-allowed; }
+        .result-btn { width: 100%; padding: 12px; background: var(--gold); border: none; border-radius: 6px; font-family: 'Oxanium'; font-weight: bold; cursor: pointer; color: #060b1a; transition: 0.2s; }
+        .result-btn:disabled { background: #1f2937; color: #4b5563; cursor: not-allowed; opacity: 0.5; }
         
         .float-actions { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
         .float-btn { 
@@ -124,7 +157,6 @@
             align-items: center; justify-content: center; color: #060b1a; font-weight: bold;
         }
 
-        /* --- CHAT STYLES --- */
         #chat-container {
             position: fixed; bottom: 20px; left: 20px; width: 280px; z-index: 1001;
             background: rgba(17, 24, 39, 0.95); border: 1px solid var(--gold);
@@ -156,6 +188,8 @@
 </head>
 <body>
 
+<div id="toast">PICK LOCKED! 🔒</div>
+
 <div id="emoji-modal" class="modal">
     <div class="label" id="picker-title">Select Avatar</div>
     <div class="emoji-grid">
@@ -174,7 +208,8 @@
 </div>
 
 <div id="resolve-modal" class="modal">
-    <div class="label" style="font-size: 1rem; margin-bottom: 15px; color: var(--p1-color);">DECLARE WINNER</div>
+    <div class="label" style="font-size: 1rem; margin-bottom: 5px; color: var(--p1-color);">ARE YOU SURE?</div>
+    <p style="font-size: 0.8rem; margin-bottom: 15px; opacity: 0.7;">Declaring a winner updates the scores permanently.</p>
     <div id="resolve-options" style="display: flex; flex-direction: column;"></div>
     <button onclick="closeResolveModal()" style="margin-top:10px; background:none; border:1px solid #ef4444; color:#ef4444; padding:8px 15px; border-radius:5px; cursor:pointer; font-family:'Oxanium'; font-weight:bold; width: 100%;">CANCEL</button>
 </div>
@@ -376,7 +411,6 @@
     window.addEventListener('online', () => document.body.classList.remove('offline'));
     window.addEventListener('offline', () => document.body.classList.add('offline'));
 
-    // Scroll Logic for floating buttons
     window.onscroll = function() {
         const topBtn = document.getElementById("btn-top");
         if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
@@ -401,7 +435,6 @@
         closeEmojiPicker();
     }
 
-    // --- CHAT LOGIC ---
     function toggleChat() {
         const chat = document.getElementById('chat-container');
         const icon = document.getElementById('chat-toggle-icon');
@@ -413,17 +446,10 @@
         const input = document.getElementById('chat-input');
         const text = input.value.trim();
         if(!text) return;
-
-        // CHANGED LINE: Now uses .toLocaleString to include the Date (Month/Day)
         const time = new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-        
         const newMsgKey = db.ref('ipl_battle_2026/chat').push().key;
-        
         db.ref(`ipl_battle_2026/chat/${newMsgKey}`).set({
-            sender: myId,
-            text: text,
-            time: time,
-            timestamp: Date.now()
+            sender: myId, text: text, time: time, timestamp: Date.now()
         });
         input.value = '';
     }
@@ -431,7 +457,6 @@
     function updateChat(chatData) {
         const chatBox = document.getElementById('chat-messages');
         const msgs = Object.values(chatData).sort((a,b) => a.timestamp - b.timestamp);
-        
         chatBox.innerHTML = msgs.map(m => `
             <div class="chat-msg msg-${m.sender}">
                 <strong>${m.sender === 'p1' ? 'SON' : 'DAD'}:</strong> ${m.text}
@@ -447,10 +472,9 @@
         const optionsDiv = document.getElementById('resolve-options');
         const dataA = teamData[tA];
         const dataB = teamData[tB];
-
         optionsDiv.innerHTML = `
-            <button class="resolve-opt-btn" style="background: ${dataA.color}88; border: 2px solid ${dataA.color}" onclick="submitResult('${tA}')">🏆 ${dataA.abbr} WINS</button>
-            <button class="resolve-opt-btn" style="background: ${dataB.color}88; border: 2px solid ${dataB.color}" onclick="submitResult('${tB}')">🏆 ${dataB.abbr} WINS</button>
+            <button class="resolve-opt-btn" style="background: ${dataA.color}dd; border: 2px solid white" onclick="submitResult('${tA}')">🏆 ${dataA.abbr} WINS</button>
+            <button class="resolve-opt-btn" style="background: ${dataB.color}dd; border: 2px solid white" onclick="submitResult('${tB}')">🏆 ${dataB.abbr} WINS</button>
             <button class="resolve-opt-btn" style="background: #374151; border: 2px solid #6b7280" onclick="submitResult('RAIN')">🌧️ RAIN / NO RESULT</button>
         `;
         modal.style.display = 'block';
@@ -465,13 +489,11 @@
         if (!activeResolveMatch) return;
         const { id, tA, tB } = activeResolveMatch;
         let res = resInput === 'RAIN' ? 'RAIN' : resInput;
-
         db.ref('ipl_battle_2026').once('value', snap => {
             const d = snap.val() || {};
             const p = d.picks ? d.picks[id] : null;
             const updates = {};
             updates[`results/${id}`] = res;
-            
             if (res !== "RAIN" && p) {
                 if (p.p1 === res) updates['p1Score'] = (d.p1Score || 0) + 1;
                 if (p.p2 === res) updates['p2Score'] = (d.p2Score || 0) + 1;
@@ -479,6 +501,14 @@
             db.ref('ipl_battle_2026').update(updates);
         });
         closeResolveModal();
+    }
+
+    function updateNRR(teamName) {
+        const currentNRR = (currentData.nrr && currentData.nrr[teamName]) || '0.000';
+        const newNRR = prompt(`Update NRR for ${teamName}:`, currentNRR);
+        if (newNRR !== null && !isNaN(parseFloat(newNRR))) {
+            db.ref(`ipl_battle_2026/nrr/${teamName}`).set(newNRR);
+        }
     }
 
     function matchesQuery(teamName, query) {
@@ -498,10 +528,11 @@
         }
     }
 
-    function filterByTeam(abbr) {
-        document.getElementById('team-search').value = abbr;
-        handleSearch();
-        window.scrollTo({top: 0, behavior: 'smooth'});
+    function showToast(msg = 'PICK LOCKED! 🔒') {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 2000);
     }
 
     function render(data) {
@@ -517,7 +548,8 @@
         document.getElementById('p2-emoji').innerText = avatars.p2 || '👨';
 
         let table = {};
-        let srhH = [], kkrH = [], userH = [], teamHistory = {};
+        let teamHistory = {};
+        let srhH = [], kkrH = [], userH = [];
         Object.keys(teamData).forEach(t => {
             table[t] = { p: 0, w: 0, l: 0, pts: 0 };
             teamHistory[t] = [];
@@ -563,11 +595,15 @@
                 <td style="color:${teamData[t].color}; font-weight:600; cursor:pointer" onclick="filterByTeam('${teamData[t].abbr}')">${teamData[t].abbr}</td>
                 <td>${table[t].p}</td><td>${table[t].w}</td><td>${table[t].l}</td>
                 <td style="color:var(--gold); font-weight:bold;">${table[t].pts}</td>
-                <td><span style="font-size:0.7rem; color:var(--p1-color);">${nrrData[t] || '0.000'}</span></td>
+                <td style="white-space:nowrap">
+                    <span style="font-size:0.7rem; color:var(--p1-color);">${nrrData[t] || '0.000'}</span>
+                    <span style="cursor:pointer; font-size: 0.6rem; color: var(--gold); margin-left:4px" onclick="updateNRR('${t}')">✎</span>
+                </td>
                 <td style="text-align:center"><div class="form-circle form-${lastStatus}" style="margin: 0 auto; width: 18px; height: 18px; font-size: 9px;">${lastStatus === 'empty' ? '-' : lastStatus[0]}</div></td>
             </tr>`
         }).join('');
 
+        const now = new Date();
         document.getElementById('grid').innerHTML = matches
         .filter(m => matchesQuery(m.h, searchTerm) || matchesQuery(m.a, searchTerm))
         .map(m => {
@@ -575,13 +611,23 @@
             const win = results[m.id];
             const hData = teamData[m.h];
             const aData = teamData[m.a];
+            
+            // Match Start Logic (Time-based lock)
+            const matchDateObj = new Date(m.date + " 19:30"); // Assumes 7:30 PM starts
+            const timeLocked = now > matchDateObj;
+            
+            const isLocked = (pick[myId] || timeLocked) ? 'locked-pick' : '';
+            const winnerClass = win && pick[myId] === win ? 'winner-glow' : '';
             let state = win ? (pick[myId] === win ? 'finished-win' : (win === 'RAIN' ? '' : 'finished-loss')) : '';
+            
+            const lockLabel = timeLocked ? '🕒 STARTED' : (pick[myId] ? '🔒 LOCKED' : '');
+            
             return `
-                <div id="match-${m.id}" class="match-card ${state}" style="--team-glow: ${hData.color}44">
-                    <div class="label" style="font-size:0.6rem; color:#9ca3af">Match ${m.id} • ${m.date}</div>
+                <div id="match-${m.id}" class="match-card ${state} ${winnerClass}" style="--team-glow: ${hData.color}44; --glow-color: ${hData.color}">
+                    <div class="label" style="font-size:0.6rem; color:#9ca3af">Match ${m.id} • ${m.date} ${lockLabel}</div>
                     <div class="team-row">
-                        <button class="team-btn ${pick.p1===m.h?'p1-picked':''} ${pick.p2===m.h?'p2-picked':''}" onclick="makePick(${m.id},'${m.h}','${m.a}')">${hData.abbr}</button>
-                        <button class="team-btn ${pick.p1===m.a?'p1-picked':''} ${pick.p2===m.a?'p2-picked':''}" onclick="makePick(${m.id},'${m.a}','${m.h}')">${aData.abbr}</button>
+                        <button class="team-btn ${pick.p1===m.h?'p1-picked':''} ${pick.p2===m.h?'p2-picked':''} ${isLocked}" onclick="makePick(${m.id},'${m.h}','${m.a}')">${hData.abbr}</button>
+                        <button class="team-btn ${pick.p1===m.a?'p1-picked':''} ${pick.p2===m.a?'p2-picked':''} ${isLocked}" onclick="makePick(${m.id},'${m.a}','${m.h}')">${aData.abbr}</button>
                     </div>
                     <button class="result-btn" ${win ? 'disabled' : ''} onclick="openResolveModal(${m.id},'${m.h}','${m.a}')">
                         ${win ? (win === 'RAIN' ? 'RAIN/NO RESULT' : 'WINNER: ' + teamData[win].abbr) : 'DECLARE WINNER'}
@@ -591,12 +637,34 @@
         }).join('');
     }
 
+    function filterByTeam(abbr) {
+        document.getElementById('team-search').value = abbr;
+        handleSearch();
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
     function makePick(id, sel, oth) {
+        const match = matches.find(m => m.id === id);
+        const matchStartTime = new Date(match.date + " 19:30");
+        const currentTime = new Date();
+
+        // Check 1: Time Lock (Match already started)
+        if (currentTime > matchStartTime) {
+            showToast("ALREADY STARTED! 🕒");
+            return;
+        }
+
+        // Check 2: Hard Lock (Selection already made)
+        if(currentData.picks && currentData.picks[id] && currentData.picks[id][myId]) {
+            return; 
+        }
+
         const otherId = myId === 'p1' ? 'p2' : 'p1';
         const updates = {};
         updates[`picks/${id}/${myId}`] = sel;
         updates[`picks/${id}/${otherId}`] = oth;
         db.ref('ipl_battle_2026').update(updates);
+        showToast("PICK LOCKED! 🔒");
     }
 
     function resetData() {
