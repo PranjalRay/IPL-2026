@@ -31,6 +31,8 @@
         th { border-bottom: 2px solid #374151; padding: 12px; color: var(--gold); text-align: left; }
         td { padding: 10px; border-bottom: 1px solid #1f2937; }
 
+        .nrr-btn { background: #374151; color: var(--p1-color); border: none; border-radius: 4px; padding: 2px 5px; cursor: pointer; font-size: 0.6rem; margin-left: 5px; font-family: 'Oxanium'; }
+
         /* Stats & Team History */
         .stats-area { max-width: 1200px; margin: 10px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px; }
         .player-stats { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; text-align: center; border: 1px solid #1f2937; }
@@ -39,7 +41,6 @@
         .form-W { background: #10b981; box-shadow: 0 0 5px #10b981; }
         .form-L { background: #ef4444; }
         .form-NR { background: #6b7280; }
-        .hot-fire { font-size: 0.7rem; color: #ff4e50; font-weight: bold; animation: flicker 1s infinite; }
 
         /* Grid */
         .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto; }
@@ -50,8 +51,6 @@
         .p1-picked { border-color: var(--p1-color) !important; background: #002a2e !important; box-shadow: 0 0 10px var(--p1-color); }
         .p2-picked { border-color: var(--p2-color) !important; background: #2e001a !important; box-shadow: 0 0 10px var(--p2-color); }
         .result-btn { width: 100%; padding: 12px; background: var(--gold); border: none; border-radius: 6px; font-family: 'Oxanium'; font-weight: bold; cursor: pointer; }
-
-        @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
     </style>
 </head>
 <body>
@@ -71,7 +70,7 @@
 <details>
     <summary>📊 VIEW IPL 2026 POINTS TABLE</summary>
     <table>
-        <thead><tr><th>TEAM</th><th>P</th><th>W</th><th>L</th><th>NR</th><th>PTS</th></tr></thead>
+        <thead><tr><th>TEAM</th><th>P</th><th>W</th><th>L</th><th>NR</th><th>PTS</th><th>NRR</th></tr></thead>
         <tbody id="points-body"></tbody>
     </table>
 </details>
@@ -194,8 +193,8 @@
     function render(data) {
         const results = data.results || {};
         const picks = data.picks || {};
+        const nrrData = data.nrr || {};
 
-        // 1. Process Standings & Team History
         let table = {};
         let srhH = [], kkrH = [];
         Object.keys(teamColors).forEach(t => table[t] = { p: 0, w: 0, l: 0, nr: 0, pts: 0 });
@@ -218,20 +217,33 @@
             }
         });
 
-        // 2. Render Leaderboard & Points Table
         document.getElementById('p1-display').innerText = data.p1Score || 0;
         document.getElementById('p2-display').innerText = data.p2Score || 0;
 
-        const sorted = Object.keys(table).sort((a,b) => table[b].pts - table[a].pts);
-        document.getElementById('points-body').innerHTML = sorted.map(t => `
-            <tr><td>${t.split(' ').pop()}</td><td>${table[t].p}</td><td>${table[t].w}</td><td>${table[t].l}</td><td>${table[t].nr}</td><td style="color:var(--gold)">${table[t].pts}</td></tr>
-        `).join('');
+        // Detect Point Ties
+        const ptsCount = {};
+        Object.values(table).forEach(t => { if(t.pts > 0) ptsCount[t.pts] = (ptsCount[t.pts] || 0) + 1; });
 
-        // 3. Render Team Obsession
+        // Sort by Points, then by NRR
+        const sorted = Object.keys(table).sort((a,b) => (table[b].pts - table[a].pts) || (parseFloat(nrrData[b]||0) - parseFloat(nrrData[a]||0)));
+
+        document.getElementById('points-body').innerHTML = sorted.map(t => {
+            const hasTie = ptsCount[table[t].pts] > 1;
+            return `
+                <tr>
+                    <td>
+                        ${t.split(' ').pop()} 
+                        ${hasTie ? `<button class="nrr-btn" onclick="updateNRR('${t}')">✎ NRR</button>` : ''}
+                    </td>
+                    <td>${table[t].p}</td><td>${table[t].w}</td><td>${table[t].l}</td><td>${table[t].nr}</td>
+                    <td style="color:var(--gold); font-weight:bold;">${table[t].pts}</td>
+                    <td style="color:var(--p1-color); font-size:0.7rem;">${nrrData[t] || '0.000'}</td>
+                </tr>
+            `}).join('');
+
         const histUI = (id, list) => document.getElementById(id).innerHTML = list.slice(-5).map(r => `<div class="form-circle form-${r}"></div>`).join('');
         histUI('srh-history', srhH); histUI('kkr-history', kkrH);
 
-        // 4. Render Match Grid
         const grid = document.getElementById('grid');
         grid.innerHTML = matches.map(m => {
             const pick = picks[m.id] || {};
@@ -250,6 +262,14 @@
                 </div>
             `;
         }).join('');
+    }
+
+    function updateNRR(teamName) {
+        const val = prompt(`Enter official NRR for ${teamName}:`, "0.000");
+        if (val === null) return;
+        const num = parseFloat(val);
+        if (isNaN(num)) return alert("Enter a valid number!");
+        db.ref('ipl_battle_2026/nrr').update({ [teamName]: num.toFixed(3) });
     }
 
     function makePick(id, sel, oth) {
@@ -275,3 +295,4 @@
 </script>
 </body>
 </html>
+ 
