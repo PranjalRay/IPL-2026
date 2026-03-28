@@ -34,6 +34,12 @@
             100% { box-shadow: 0 0 5px var(--glow-color); }
         }
 
+        @keyframes nuclearGlow {
+            0% { box-shadow: 0 0 5px #ef4444; }
+            50% { box-shadow: 0 0 20px #ef4444; }
+            100% { box-shadow: 0 0 5px #ef4444; }
+        }
+
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-4px); }
@@ -106,6 +112,7 @@
         .modal-input {
             width: 100%; padding: 10px; background: #1f2937; border: 1px solid var(--gold);
             border-radius: 8px; color: white; margin-bottom: 15px; text-align: center; font-family: 'Oxanium'; font-size: 1.2rem;
+            height: 45px;
         }
 
         .collapsible-stats { max-width: 1200px; margin: 15px auto; padding: 0 20px; }
@@ -170,7 +177,26 @@
         .minimized #chat-messages, .minimized #chat-input-area { display: none; }
         .minimized { width: 120px !important; }
 
-        .footer-tools { text-align: center; margin-top: 40px; opacity: 0.3; font-size: 0.7rem; }
+        .footer-tools { text-align: center; margin-top: 40px; padding: 20px; }
+        .nuclear-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid #ef4444;
+            color: #ef4444;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Oxanium';
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
+            animation: nuclearGlow 2s infinite;
+        }
+        .nuclear-btn:hover {
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 0 20px #ef4444;
+        }
     </style>
 </head>
 <body>
@@ -295,7 +321,7 @@
 </div>
 
 <div class="footer-tools">
-    <button onclick="resetData()" style="background:none; border:none; color:red; cursor:pointer;">Reset All Battle Data</button>
+    <button onclick="resetData()" class="nuclear-btn">⚠️ Reset All Battle Data</button>
 </div>
 
 <script>
@@ -412,7 +438,7 @@
     db.ref('ipl_battle_2026').on('value', snap => {
         currentData = snap.val() || {};
         render(currentData);
-        updateChat(currentData.chat || {});
+        updateChat(currentData.chat || {}, currentData.avatars || { p1: '👦', p2: '👨' });
     });
 
     window.addEventListener('online', () => document.body.classList.remove('offline'));
@@ -472,15 +498,19 @@
         });
     }
 
-    function updateChat(chatData) {
+    function updateChat(chatData, avatars) {
         const chatBox = document.getElementById('chat-messages');
         const msgs = Object.values(chatData).sort((a,b) => a.timestamp - b.timestamp);
-        chatBox.innerHTML = msgs.map(m => `
-            <div class="chat-msg msg-${m.sender}">
-                <strong>${m.sender === 'p1' ? 'SON' : 'DAD'}:</strong> ${m.text}
-                <span class="msg-time">${m.time}</span>
-            </div>
-        `).join('');
+        chatBox.innerHTML = msgs.map(m => {
+            const emoji = m.sender === 'p1' ? (avatars.p1 || '👦') : (avatars.p2 || '👨');
+            const name = m.sender === 'p1' ? 'SON' : 'DAD';
+            return `
+                <div class="chat-msg msg-${m.sender}">
+                    <strong>${emoji} ${name}:</strong> ${m.text}
+                    <span class="msg-time">${m.time}</span>
+                </div>
+            `;
+        }).join('');
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
@@ -727,7 +757,9 @@
     }
 
     function resetData() {
-        if(confirm("Wipe all data?")) db.ref('ipl_battle_2026').set({ p1Score: 0, p2Score: 0, results: {}, nrr: {}, avatars: { p1: '👦', p2: '👨' }, chat: {} });
+        if(confirm("☢️ NUCLEAR WARNING: This will wipe all scores, picks, and NRR data. Are you absolutely sure?")) {
+            db.ref('ipl_battle_2026').set({ p1Score: 0, p2Score: 0, results: {}, nrr: {}, avatars: { p1: '👦', p2: '👨' }, chat: {} });
+        }
     }
 </script>
 </body>
