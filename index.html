@@ -145,7 +145,7 @@
 </div>
 
 <div class="search-container">
-    <input type="text" id="team-search" placeholder="Search team..." oninput="handleSearch()">
+    <input type="text" id="team-search" placeholder="Search (e.g. PBKS, Punjab)..." oninput="handleSearch()">
 </div>
 
 <details class="collapsible-stats">
@@ -210,12 +210,18 @@
     const myId = params.get('user') || 'p1';
     let activePickerId = 'p1';
 
-    const teamColors = {
-        "Royal Challengers Bengaluru": "#ec1c24", "Mumbai Indians": "#004ba0", 
-        "Chennai Super Kings": "#ffff00", "Kolkata Knight Riders": "#b886ee", 
-        "Sunrisers Hyderabad": "#ff822a", "Rajasthan Royals": "#ea1a85",
-        "Gujarat Titans": "#5da1e3", "Delhi Capitals": "#4a90e2", 
-        "Lucknow Super Giants": "#a3ceee", "Punjab Kings": "#ed1b24"
+    // Added Abbreviations and consistent naming
+    const teamData = {
+        "Kolkata Knight Riders": { abbr: "KKR", color: "#b886ee" },
+        "Punjab Kings": { abbr: "PBKS", color: "#ed1b24" },
+        "Sunrisers Hyderabad": { abbr: "SRH", color: "#ff822a" },
+        "Gujarat Titans": { abbr: "GT", color: "#5da1e3" },
+        "Chennai Super Kings": { abbr: "CSK", color: "#ffff00" },
+        "Mumbai Indians": { abbr: "MI", color: "#004ba0" },
+        "Delhi Capitals": { abbr: "DC", color: "#4a90e2" },
+        "Lucknow Super Giants": { abbr: "LSG", color: "#a3ceee" },
+        "Royal Challengers Bengaluru": { abbr: "RCB", color: "#ec1c24", alias: "Bangalore" },
+        "Rajasthan Royals": { abbr: "RR", color: "#ea1a85" }
     };
 
     const matches = [
@@ -316,12 +322,24 @@
         closeEmojiPicker();
     }
 
+    // Helper for advanced search
+    function matchesQuery(teamName, query) {
+        if (!query) return true;
+        const q = query.toLowerCase();
+        const data = teamData[teamName];
+        if (!data) return teamName.toLowerCase().includes(q);
+        
+        return teamName.toLowerCase().includes(q) || 
+               data.abbr.toLowerCase().includes(q) || 
+               (data.alias && data.alias.toLowerCase().includes(q));
+    }
+
     function render(data) {
         const avatars = data.avatars || { p1: '👦', p2: '👨' };
         const results = data.results || {};
         const picks = data.picks || {};
         const nrrData = data.nrr || {};
-        const searchTerm = document.getElementById('team-search').value.toLowerCase();
+        const searchTerm = document.getElementById('team-search').value.trim();
         
         document.getElementById('p1-display').innerText = data.p1Score || 0;
         document.getElementById('p2-display').innerText = data.p2Score || 0;
@@ -330,7 +348,7 @@
 
         let table = {};
         let srhH = [], kkrH = [], userH = [];
-        Object.keys(teamColors).forEach(t => table[t] = { p: 0, w: 0, l: 0, pts: 0 });
+        Object.keys(teamData).forEach(t => table[t] = { p: 0, w: 0, l: 0, pts: 0 });
 
         matches.forEach(m => {
             const res = results[m.id];
@@ -342,7 +360,6 @@
                 table[res].w++; table[res].pts += 2;
                 table[res === m.h ? m.a : m.h].l++;
                 
-                // Form Grids Calculation
                 if (m.h.includes("Hyderabad") || m.a.includes("Hyderabad")) srhH.push(res.includes("Hyderabad") ? 'W' : 'L');
                 if (m.h.includes("Kolkata") || m.a.includes("Kolkata")) kkrH.push(res.includes("Kolkata") ? 'W' : 'L');
                 
@@ -351,7 +368,6 @@
             }
         });
 
-        // Update Win % based on matches resolved
         const resolvedCount = Object.keys(results).length;
         const myScore = myId === 'p1' ? (data.p1Score || 0) : (data.p2Score || 0);
         document.getElementById('win-pct').innerText = resolvedCount > 0 ? Math.round((myScore / resolvedCount) * 100) + "%" : "0%";
@@ -369,7 +385,7 @@
         const sorted = Object.keys(table).sort((a,b) => (table[b].pts - table[a].pts) || (parseFloat(nrrData[b]||0) - parseFloat(nrrData[a]||0)));
         document.getElementById('points-body').innerHTML = sorted.map(t => `
             <tr>
-                <td style="color:${teamColors[t]}; font-weight:600">${t.split(' ').pop()}</td>
+                <td style="color:${teamData[t].color}; font-weight:600">${teamData[t].abbr}</td>
                 <td>${table[t].p}</td><td>${table[t].w}</td><td>${table[t].l}</td>
                 <td style="color:var(--gold); font-weight:bold;">${table[t].pts}</td>
                 <td><span style="font-size:0.7rem; color:var(--p1-color);">${nrrData[t] || '0.000'}</span></td>
@@ -377,20 +393,22 @@
         `).join('');
 
         document.getElementById('grid').innerHTML = matches
-        .filter(m => m.h.toLowerCase().includes(searchTerm) || m.a.toLowerCase().includes(searchTerm))
+        .filter(m => matchesQuery(m.h, searchTerm) || matchesQuery(m.a, searchTerm))
         .map(m => {
             const pick = picks[m.id] || {};
             const win = results[m.id];
+            const hData = teamData[m.h];
+            const aData = teamData[m.a];
             let state = win ? (pick[myId] === win ? 'finished-win' : (win === 'RAIN' ? '' : 'finished-loss')) : '';
             return `
-                <div class="match-card ${state}" style="--team-glow: ${teamColors[m.h]}44">
+                <div class="match-card ${state}" style="--team-glow: ${hData.color}44">
                     <div class="label" style="font-size:0.6rem; color:#9ca3af">Match ${m.id} • ${m.date}</div>
                     <div class="team-row">
-                        <button class="team-btn ${pick.p1===m.h?'p1-picked':''} ${pick.p2===m.h?'p2-picked':''}" onclick="makePick(${m.id},'${m.h}','${m.a}')">${m.h.split(' ').pop()}</button>
-                        <button class="team-btn ${pick.p1===m.a?'p1-picked':''} ${pick.p2===m.a?'p2-picked':''}" onclick="makePick(${m.id},'${m.a}','${m.h}')">${m.a.split(' ').pop()}</button>
+                        <button class="team-btn ${pick.p1===m.h?'p1-picked':''} ${pick.p2===m.h?'p2-picked':''}" onclick="makePick(${m.id},'${m.h}','${m.a}')">${hData.abbr}</button>
+                        <button class="team-btn ${pick.p1===m.a?'p1-picked':''} ${pick.p2===m.a?'p2-picked':''}" onclick="makePick(${m.id},'${m.a}','${m.h}')">${aData.abbr}</button>
                     </div>
                     <button class="result-btn" ${win ? 'disabled' : ''} onclick="resolve(${m.id},'${m.h}','${m.a}')">
-                        ${win ? (win === 'RAIN' ? 'RAIN/NO RESULT' : 'WINNER: ' + win.split(' ').pop()) : 'DECLARE WINNER'}
+                        ${win ? (win === 'RAIN' ? 'RAIN/NO RESULT' : 'WINNER: ' + teamData[win].abbr) : 'DECLARE WINNER'}
                     </button>
                 </div>
             `;
@@ -406,8 +424,15 @@
     }
 
     function resolve(id, tA, tB) {
-        const res = prompt(`Enter Winner: "${tA}", "${tB}", or "RAIN"`);
-        if (!res) return;
+        const resInput = prompt(`Enter Winner: "${teamData[tA].abbr}", "${teamData[tB].abbr}", or "RAIN"`).toUpperCase();
+        if (!resInput) return;
+        
+        let res = resInput === 'RAIN' ? 'RAIN' : null;
+        if (resInput === teamData[tA].abbr) res = tA;
+        if (resInput === teamData[tB].abbr) res = tB;
+
+        if (!res) { alert("Invalid Winner Abbreviation!"); return; }
+
         db.ref('ipl_battle_2026').once('value', snap => {
             const d = snap.val() || {};
             const p = d.picks ? d.picks[id] : null;
