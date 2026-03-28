@@ -28,7 +28,6 @@
             padding-bottom: 80px; 
         }
         
-        /* Updated Header with central Status Dot */
         .header { 
             position: sticky; top: 0; z-index: 1000; 
             background: rgba(17, 24, 39, 0.85);
@@ -45,7 +44,6 @@
         #p2-display { color: var(--p2-color); text-shadow: 0 0 10px var(--p2-color); }
         .label { font-size: 0.65rem; letter-spacing: 1.5px; color: var(--gold); font-weight: 700; text-transform: uppercase; cursor: pointer; margin-bottom: 5px; }
 
-        /* Smaller Search Bar */
         .search-container { max-width: 1200px; margin: 15px auto; padding: 0 20px; text-align: center; }
         #team-search { 
             width: 80%; max-width: 240px; padding: 8px 15px; border-radius: 20px; border: 1px solid #374151;
@@ -53,7 +51,6 @@
         }
         #team-search:focus { border-color: var(--p1-color); box-shadow: 0 0 10px var(--p1-color); }
 
-        /* Emoji Picker Modal */
         #emoji-modal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(20px);
@@ -64,7 +61,6 @@
         .emoji-opt { font-size: 1.5rem; cursor: pointer; padding: 5px; transition: 0.2s; border-radius: 5px; }
         .emoji-opt:hover { background: rgba(255,255,255,0.1); transform: scale(1.2); }
 
-        /* Shared Components */
         .collapsible-stats { max-width: 1200px; margin: 15px auto; padding: 0 20px; }
         .collapsible-stats summary { 
             cursor: pointer; background: rgba(31, 41, 55, 0.7); padding: 12px; border-radius: 8px; 
@@ -95,7 +91,6 @@
         }
         .match-card.finished-win { border-color: #10b981; background: rgba(16, 185, 129, 0.15); }
         .match-card.finished-loss { border-color: #ef4444; background: rgba(239, 68, 68, 0.15); }
-        .match-card.finished-rain { border-color: #6b7280; background: rgba(107, 114, 128, 0.15); }
 
         .team-row { display: flex; gap: 10px; margin: 15px 0; }
         .team-btn { flex: 1; padding: 12px 5px; border: 2px solid #374151; border-radius: 8px; background: #1f2937; color: white; cursor: pointer; font-family: 'Oxanium'; font-size: 0.8rem; }
@@ -163,6 +158,19 @@
         <div style="text-align: center; border: 1px solid #374151; padding: 15px; border-radius: 8px; background: var(--card);">
             <div class="label">MY LAST 5 (BATTLE)</div>
             <div id="user-history" class="form-row"></div>
+        </div>
+        <div style="text-align: center; border: 1px solid #374151; padding: 15px; border-radius: 8px; background: var(--card);">
+            <div class="label">TEAM FORM (LAST 5)</div>
+            <div style="display:flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                <div>
+                    <div style="font-size: 0.7rem; color:#ff822a; font-weight:bold;">SRH</div>
+                    <div id="srh-form" class="form-row" style="margin-top: 5px;"></div>
+                </div>
+                <div>
+                    <div style="font-size: 0.7rem; color:#b886ee; font-weight:bold;">KKR</div>
+                    <div id="kkr-form" class="form-row" style="margin-top: 5px;"></div>
+                </div>
+            </div>
         </div>
     </div>
 </details>
@@ -317,12 +325,11 @@
         
         document.getElementById('p1-display').innerText = data.p1Score || 0;
         document.getElementById('p2-display').innerText = data.p2Score || 0;
-        
-        // Safety checks to prevent "undefined"
         document.getElementById('p1-emoji').innerText = avatars.p1 || '👦';
         document.getElementById('p2-emoji').innerText = avatars.p2 || '👨';
 
         let table = {};
+        let srhH = [], kkrH = [], userH = [];
         Object.keys(teamColors).forEach(t => table[t] = { p: 0, w: 0, l: 0, pts: 0 });
 
         matches.forEach(m => {
@@ -334,8 +341,30 @@
             } else {
                 table[res].w++; table[res].pts += 2;
                 table[res === m.h ? m.a : m.h].l++;
+                
+                // Form Grids Calculation
+                if (m.h.includes("Hyderabad") || m.a.includes("Hyderabad")) srhH.push(res.includes("Hyderabad") ? 'W' : 'L');
+                if (m.h.includes("Kolkata") || m.a.includes("Kolkata")) kkrH.push(res.includes("Kolkata") ? 'W' : 'L');
+                
+                const myPick = picks[m.id] ? picks[m.id][myId] : null;
+                if(myPick) userH.push(myPick === res ? 'W' : 'L');
             }
         });
+
+        // Update Win % based on matches resolved
+        const resolvedCount = Object.keys(results).length;
+        const myScore = myId === 'p1' ? (data.p1Score || 0) : (data.p2Score || 0);
+        document.getElementById('win-pct').innerText = resolvedCount > 0 ? Math.round((myScore / resolvedCount) * 100) + "%" : "0%";
+
+        const genCircles = (arr) => {
+            let last5 = arr.slice(-5);
+            while(last5.length < 5) last5.push('empty');
+            return last5.map(r => `<div class="form-circle form-${r}">${r === 'empty' ? '-' : r[0]}</div>`).join('');
+        };
+        
+        document.getElementById('user-history').innerHTML = genCircles(userH);
+        document.getElementById('srh-form').innerHTML = genCircles(srhH);
+        document.getElementById('kkr-form').innerHTML = genCircles(kkrH);
 
         const sorted = Object.keys(table).sort((a,b) => (table[b].pts - table[a].pts) || (parseFloat(nrrData[b]||0) - parseFloat(nrrData[a]||0)));
         document.getElementById('points-body').innerHTML = sorted.map(t => `
@@ -352,7 +381,7 @@
         .map(m => {
             const pick = picks[m.id] || {};
             const win = results[m.id];
-            let state = win ? (pick[myId] === win ? 'finished-win' : 'finished-loss') : '';
+            let state = win ? (pick[myId] === win ? 'finished-win' : (win === 'RAIN' ? '' : 'finished-loss')) : '';
             return `
                 <div class="match-card ${state}" style="--team-glow: ${teamColors[m.h]}44">
                     <div class="label" style="font-size:0.6rem; color:#9ca3af">Match ${m.id} • ${m.date}</div>
@@ -360,6 +389,9 @@
                         <button class="team-btn ${pick.p1===m.h?'p1-picked':''} ${pick.p2===m.h?'p2-picked':''}" onclick="makePick(${m.id},'${m.h}','${m.a}')">${m.h.split(' ').pop()}</button>
                         <button class="team-btn ${pick.p1===m.a?'p1-picked':''} ${pick.p2===m.a?'p2-picked':''}" onclick="makePick(${m.id},'${m.a}','${m.h}')">${m.a.split(' ').pop()}</button>
                     </div>
+                    <button class="result-btn" ${win ? 'disabled' : ''} onclick="resolve(${m.id},'${m.h}','${m.a}')">
+                        ${win ? (win === 'RAIN' ? 'RAIN/NO RESULT' : 'WINNER: ' + win.split(' ').pop()) : 'DECLARE WINNER'}
+                    </button>
                 </div>
             `;
         }).join('');
@@ -371,6 +403,22 @@
         updates[`picks/${id}/${myId}`] = sel;
         updates[`picks/${id}/${otherId}`] = oth;
         db.ref('ipl_battle_2026').update(updates);
+    }
+
+    function resolve(id, tA, tB) {
+        const res = prompt(`Enter Winner: "${tA}", "${tB}", or "RAIN"`);
+        if (!res) return;
+        db.ref('ipl_battle_2026').once('value', snap => {
+            const d = snap.val() || {};
+            const p = d.picks ? d.picks[id] : null;
+            const updates = {};
+            updates[`results/${id}`] = res;
+            if (res !== "RAIN" && p) {
+                if (p.p1 === res) updates['p1Score'] = (d.p1Score || 0) + 1;
+                if (p.p2 === res) updates['p2Score'] = (d.p2Score || 0) + 1;
+            }
+            db.ref('ipl_battle_2026').update(updates);
+        });
     }
 
     function resetData() {
