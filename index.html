@@ -51,7 +51,6 @@
         }
         #team-search:focus { border-color: var(--p1-color); box-shadow: 0 0 10px var(--p1-color); }
 
-        /* Style for the new Jump Button */
         .jump-btn {
             background: var(--gold); border: none; padding: 8px 15px; border-radius: 20px;
             font-family: 'Oxanium'; font-weight: bold; font-size: 0.75rem; cursor: pointer;
@@ -82,7 +81,7 @@
         .form-row { display: flex; gap: 5px; justify-content: center; margin-top: 10px; }
         .form-circle { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white; border: 1px solid rgba(255,255,255,0.1); }
         .form-W { background: #10b981; box-shadow: 0 0 5px #10b981; } 
-        .form-L { background: #ef4444; } 
+        .form-L { background: #ef4444; box-shadow: 0 0 5px #ef4444; } 
         .form-NR { background: #6b7280; }
         .form-empty { border: 1px dashed #4b5563; color: #4b5563; }
 
@@ -108,11 +107,14 @@
         .result-btn { width: 100%; padding: 12px; background: var(--gold); border: none; border-radius: 6px; font-family: 'Oxanium'; font-weight: bold; cursor: pointer; color: #060b1a; }
         .result-btn:disabled { background: #1f2937; color: #4b5563; cursor: not-allowed; }
         
-        #btn-top { 
-            position: fixed; bottom: 20px; right: 20px; background: var(--gold); border: none; 
-            width: 50px; height: 50px; border-radius: 50%; font-size: 25px; 
-            cursor: pointer; display: none; z-index: 999; box-shadow: 0 0 15px var(--gold); 
+        /* Floating Buttons Container */
+        .float-actions { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
+        .float-btn { 
+            background: var(--gold); border: none; width: 50px; height: 50px; border-radius: 50%; 
+            font-size: 20px; cursor: pointer; display: none; box-shadow: 0 0 15px var(--gold); 
+            align-items: center; justify-content: center; color: #060b1a; font-weight: bold;
         }
+
         .footer-tools { text-align: center; margin-top: 40px; opacity: 0.3; font-size: 0.7rem; }
     </style>
 </head>
@@ -188,7 +190,7 @@
     <summary>🏆 SEASON POINTS TABLE</summary>
     <div style="margin-top: 10px; border: 1px solid #374151; border-radius: 8px; overflow: hidden; background: var(--card);">
         <table>
-            <thead><tr><th>TEAM</th><th>P</th><th>W</th><th>L</th><th>PTS</th><th>NRR</th></tr></thead>
+            <thead><tr><th>TEAM</th><th>P</th><th>W</th><th>L</th><th>PTS</th><th>NRR</th><th style="text-align:center">LAST</th></tr></thead>
             <tbody id="points-body"></tbody>
         </table>
     </div>
@@ -196,7 +198,10 @@
 
 <div id="grid" class="container"></div>
 
-<button id="btn-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</button>
+<div class="float-actions">
+    <button id="btn-latest" class="float-btn" onclick="scrollToLatest()" title="Latest Match">↓</button>
+    <button id="btn-top" class="float-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Back to Top">↑</button>
+</div>
 
 <div class="footer-tools">
     <button onclick="resetData()" style="background:none; border:none; color:red; cursor:pointer;">Reset All Battle Data</button>
@@ -315,6 +320,19 @@
     window.addEventListener('online', () => document.body.classList.remove('offline'));
     window.addEventListener('offline', () => document.body.classList.add('offline'));
 
+    // Scroll Logic for floating buttons
+    window.onscroll = function() {
+        const topBtn = document.getElementById("btn-top");
+        const latBtn = document.getElementById("btn-latest");
+        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+            topBtn.style.display = "flex";
+            latBtn.style.display = "flex";
+        } else {
+            topBtn.style.display = "none";
+            latBtn.style.display = "none";
+        }
+    };
+
     function handleSearch() { render(currentData); }
 
     function openEmojiPicker(id) { 
@@ -341,7 +359,6 @@
                (data.alias && data.alias.toLowerCase().includes(q));
     }
 
-    // Function to scroll to the first unfinished match
     function scrollToLatest() {
         const results = currentData.results || {};
         const latestMatch = matches.find(m => !results[m.id]);
@@ -351,7 +368,6 @@
         }
     }
 
-    // Function to filter grid by clicking team name in table
     function filterByTeam(abbr) {
         document.getElementById('team-search').value = abbr;
         handleSearch();
@@ -371,8 +387,11 @@
         document.getElementById('p2-emoji').innerText = avatars.p2 || '👨';
 
         let table = {};
-        let srhH = [], kkrH = [], userH = [];
-        Object.keys(teamData).forEach(t => table[t] = { p: 0, w: 0, l: 0, pts: 0 });
+        let srhH = [], kkrH = [], userH = [], teamHistory = {};
+        Object.keys(teamData).forEach(t => {
+            table[t] = { p: 0, w: 0, l: 0, pts: 0 };
+            teamHistory[t] = [];
+        });
 
         matches.forEach(m => {
             const res = results[m.id];
@@ -380,10 +399,15 @@
             table[m.h].p++; table[m.a].p++;
             if (res === "RAIN") {
                 table[m.h].pts++; table[m.a].pts++;
+                teamHistory[m.h].push('NR');
+                teamHistory[m.a].push('NR');
             } else {
                 table[res].w++; table[res].pts += 2;
                 table[res === m.h ? m.a : m.h].l++;
                 
+                teamHistory[res].push('W');
+                teamHistory[res === m.h ? m.a : m.h].push('L');
+
                 if (m.h.includes("Hyderabad") || m.a.includes("Hyderabad")) srhH.push(res.includes("Hyderabad") ? 'W' : 'L');
                 if (m.h.includes("Kolkata") || m.a.includes("Kolkata")) kkrH.push(res.includes("Kolkata") ? 'W' : 'L');
                 
@@ -407,14 +431,17 @@
         document.getElementById('kkr-form').innerHTML = genCircles(kkrH);
 
         const sorted = Object.keys(table).sort((a,b) => (table[b].pts - table[a].pts) || (parseFloat(nrrData[b]||0) - parseFloat(nrrData[a]||0)));
-        document.getElementById('points-body').innerHTML = sorted.map(t => `
+        document.getElementById('points-body').innerHTML = sorted.map(t => {
+            const lastStatus = teamHistory[t].length > 0 ? teamHistory[t][teamHistory[t].length - 1] : 'empty';
+            return `
             <tr>
                 <td style="color:${teamData[t].color}; font-weight:600; cursor:pointer" onclick="filterByTeam('${teamData[t].abbr}')">${teamData[t].abbr}</td>
                 <td>${table[t].p}</td><td>${table[t].w}</td><td>${table[t].l}</td>
                 <td style="color:var(--gold); font-weight:bold;">${table[t].pts}</td>
                 <td><span style="font-size:0.7rem; color:var(--p1-color);">${nrrData[t] || '0.000'}</span></td>
+                <td style="text-align:center"><div class="form-circle form-${lastStatus}" style="margin: 0 auto; width: 18px; height: 18px; font-size: 9px;">${lastStatus === 'empty' ? '-' : lastStatus[0]}</div></td>
             </tr>
-        `).join('');
+        `}).join('');
 
         document.getElementById('grid').innerHTML = matches
         .filter(m => matchesQuery(m.h, searchTerm) || matchesQuery(m.a, searchTerm))
