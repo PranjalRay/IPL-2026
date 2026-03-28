@@ -14,61 +14,42 @@
         }
         body { font-family: 'Outfit', sans-serif; background: var(--bg); color: white; margin: 0; padding-bottom: 50px; }
         
-        /* Header & Leaderboard */
         .header { 
             position: sticky; top: 0; z-index: 100; background: rgba(17, 24, 39, 0.95);
             padding: 15px; border-bottom: 2px solid var(--gold); display: flex;
-            justify-content: space-around; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
+            justify-content: space-around; align-items: center; backdrop-filter: blur(10px);
         }
-        .score-box { text-align: center; }
         .score-val { font-family: 'Oxanium'; font-size: 2.8rem; font-weight: 700; line-height: 1; }
         #p1-display { color: var(--p1-color); text-shadow: 0 0 10px rgba(0,242,255,0.3); } 
         #p2-display { color: var(--p2-color); text-shadow: 0 0 10px rgba(255,0,123,0.3); }
-        .label { font-size: 0.7rem; letter-spacing: 2px; color: var(--gold); font-weight: 700; }
+        .label { font-size: 0.7rem; letter-spacing: 2px; color: var(--gold); font-weight: 700; text-transform: uppercase; }
 
-        /* Stats & Form Guide */
+        /* Collapsible Table */
+        details { max-width: 1200px; margin: 15px auto; padding: 0 20px; }
+        summary { cursor: pointer; font-family: 'Oxanium'; background: #1f2937; padding: 12px; border-radius: 8px; border: 1px solid var(--gold); list-style: none; text-align: center; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-family: 'Oxanium'; font-size: 0.8rem; background: var(--card); border-radius: 8px; overflow: hidden; }
+        th { border-bottom: 2px solid #374151; padding: 12px; color: var(--gold); text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #1f2937; }
+
+        /* Stats & Team History */
         .stats-area { max-width: 1200px; margin: 10px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px; }
-        .player-stats { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #1f2937; }
-        .stat-row { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
-        .stat-val { font-family: 'Oxanium'; font-weight: 700; font-size: 1.1rem; }
-        .form-guide { display: flex; gap: 4px; justify-content: center; margin-top: 5px; }
+        .player-stats { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; text-align: center; border: 1px solid #1f2937; }
+        .form-guide { display: flex; gap: 4px; justify-content: center; margin-top: 8px; }
         .form-circle { width: 10px; height: 10px; border-radius: 50%; background: #374151; }
         .form-W { background: #10b981; box-shadow: 0 0 5px #10b981; }
         .form-L { background: #ef4444; }
+        .form-NR { background: #6b7280; }
         .hot-fire { font-size: 0.7rem; color: #ff4e50; font-weight: bold; animation: flicker 1s infinite; }
 
-        /* Grid & Cards */
-        .container { 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-            gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto;
-        }
-        .match-card { 
-            background: var(--card); border-radius: 12px; padding: 20px;
-            border: 1px solid #1f2937; position: relative; transition: 0.3s;
-            overflow: hidden;
-        }
-        .match-card.finished { border-color: #10b981 !important; background: #06110e; opacity: 0.85; }
-        .date { font-size: 0.8rem; color: #9ca3af; margin-bottom: 10px; font-family: 'Oxanium'; }
-        
+        /* Grid */
+        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .match-card { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid #1f2937; transition: 0.3s; }
+        .match-card.finished { border-color: #10b981 !important; opacity: 0.9; }
         .vs-container { display: flex; align-items: center; justify-content: space-between; margin: 15px 0; }
-        .team-btn { 
-            flex: 1; padding: 12px 5px; border: 2px solid #374151; border-radius: 8px;
-            background: #1f2937; color: white; cursor: pointer; font-weight: 700;
-            transition: 0.3s; font-family: 'Oxanium'; font-size: 0.75rem;
-        }
-        
-        /* Consistent Pick Coloring */
+        .team-btn { flex: 1; padding: 12px 5px; border: 2px solid #374151; border-radius: 8px; background: #1f2937; color: white; cursor: pointer; font-family: 'Oxanium'; font-size: 0.75rem; }
         .p1-picked { border-color: var(--p1-color) !important; background: #002a2e !important; box-shadow: 0 0 10px var(--p1-color); }
         .p2-picked { border-color: var(--p2-color) !important; background: #2e001a !important; box-shadow: 0 0 10px var(--p2-color); }
-        
-        .result-btn { 
-            width: 100%; padding: 10px; margin-top: 15px; border: none;
-            border-radius: 6px; font-family: 'Oxanium'; font-weight: 700;
-            background: var(--gold); color: #000; cursor: pointer;
-        }
-        .result-btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; }
-        .winner-banner { text-align: center; margin-top: 10px; color: var(--gold); font-weight: 700; padding-top: 8px; border-top: 1px dashed #374151; }
+        .result-btn { width: 100%; padding: 12px; background: var(--gold); border: none; border-radius: 6px; font-family: 'Oxanium'; font-weight: bold; cursor: pointer; }
 
         @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
     </style>
@@ -80,22 +61,33 @@
         <div class="label">SON</div>
         <div id="p1-display" class="score-val">0</div>
     </div>
-    <div style="text-align:center">
-        <img src="https://pngimg.com/uploads/cricket/cricket_PNG23.png" width="40">
-        <div class="label" style="font-size:0.6rem">IPL 2026</div>
-    </div>
+    <div style="text-align:center"><img src="https://pngimg.com/uploads/cricket/cricket_PNG23.png" width="40"><div class="label" style="font-size:0.5rem">BATTLE</div></div>
     <div class="score-box">
         <div class="label">FATHER</div>
         <div id="p2-display" class="score-val">0</div>
     </div>
 </div>
 
-<div id="stats-container" class="stats-area">
-    </div>
+<details>
+    <summary>📊 VIEW IPL 2026 POINTS TABLE</summary>
+    <table>
+        <thead><tr><th>TEAM</th><th>P</th><th>W</th><th>L</th><th>NR</th><th>PTS</th></tr></thead>
+        <tbody id="points-body"></tbody>
+    </table>
+</details>
 
-<div id="grid" class="container">
-    <div style="grid-column: 1/-1; text-align: center; padding: 50px;">Syncing Match Data...</div>
+<div class="stats-area">
+    <div class="player-stats" style="border-top: 3px solid #ff822a;">
+        <div class="label">SRH (SON'S FAV)</div>
+        <div id="srh-history" class="form-guide"></div>
+    </div>
+    <div class="player-stats" style="border-top: 3px solid #3a225d;">
+        <div class="label">KKR (DAD'S FAV)</div>
+        <div id="kkr-history" class="form-guide"></div>
+    </div>
 </div>
+
+<div id="grid" class="container"></div>
 
 <script>
     const firebaseConfig = {
@@ -105,15 +97,12 @@
         projectId: "ipl-2026-dd5d0",
         storageBucket: "ipl-2026-dd5d0.firebasestorage.app",
         messagingSenderId: "595437597357",
-        appId: "1:595437597357:web:fba3115ee06d10d9b90c24",
-        measurementId: "G-3JRP3HMQDT"
+        appId: "1:595437597357:web:fba3115ee06d10d9b90c24"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
-    const params = new URLSearchParams(window.location.search);
-    const myId = params.get('user') || 'p1'; 
+    const myId = new URLSearchParams(window.location.search).get('user') || 'p1';
     const otherId = myId === 'p1' ? 'p2' : 'p1';
 
     const teamColors = {
@@ -197,113 +186,90 @@
         { id: 70, date: "24-MAY-2026", h: "Kolkata Knight Riders", a: "Delhi Capitals" }
     ];
 
-    db.ref('ipl_battle_2026').on('value', (snap) => {
+    db.ref('ipl_battle_2026').on('value', snap => {
         const data = snap.val() || {};
-        if (!data.picks) data.picks = {};
-        if (!data.results) data.results = {};
         render(data);
     });
 
     function render(data) {
         const results = data.results || {};
         const picks = data.picks || {};
-        const totalDone = Object.keys(results).length;
 
-        // --- CALC STATS LOGIC ---
-        const calcStats = (pId) => {
-            let wins = 0, streak = 0, form = [], activeStreak = true;
-            const sortedIds = Object.keys(results).sort((a,b) => b-a);
-            
-            sortedIds.forEach((id, idx) => {
-                const win = picks[id] && picks[id][pId] === results[id];
-                if(win) { wins++; if(activeStreak) streak++; } else { activeStreak = false; }
-                if(idx < 5) form.push(win ? 'W' : 'L');
-            });
-            return { winPct: totalDone > 0 ? Math.round((wins/totalDone)*100) : 0, streak, form: form.reverse() };
-        };
+        // 1. Process Standings & Team History
+        let table = {};
+        let srhH = [], kkrH = [];
+        Object.keys(teamColors).forEach(t => table[t] = { p: 0, w: 0, l: 0, nr: 0, pts: 0 });
 
-        const p1 = calcStats('p1');
-        const p2 = calcStats('p2');
+        matches.forEach(m => {
+            const res = results[m.id];
+            if (!res) return;
+            table[m.h].p++; table[m.a].p++;
+            if (res === "RAIN") {
+                table[m.h].nr++; table[m.h].pts++;
+                table[m.a].nr++; table[m.a].pts++;
+                if(m.h.includes("Hyderabad") || m.a.includes("Hyderabad")) srhH.push('NR');
+                if(m.h.includes("Kolkata") || m.a.includes("Kolkata")) kkrH.push('NR');
+            } else {
+                table[res].w++; table[res].pts += 2;
+                const loser = (res === m.h) ? m.a : m.h;
+                table[loser].l++;
+                if(m.h.includes("Hyderabad") || m.a.includes("Hyderabad")) srhH.push(res.includes("Hyderabad") ? 'W' : 'L');
+                if(m.h.includes("Kolkata") || m.a.includes("Kolkata")) kkrH.push(res.includes("Kolkata") ? 'W' : 'L');
+            }
+        });
 
-        // --- UPDATE UI ---
+        // 2. Render Leaderboard & Points Table
         document.getElementById('p1-display').innerText = data.p1Score || 0;
         document.getElementById('p2-display').innerText = data.p2Score || 0;
 
-        document.getElementById('stats-container').innerHTML = `
-            <div class="player-stats">
-                <div class="stat-row"><span class="label">WIN %</span><span class="stat-val" style="color:var(--p1-color)">${p1.winPct}%</span></div>
-                <div class="form-guide">${p1.form.map(f => `<div class="form-circle form-${f}"></div>`).join('')}</div>
-                ${p1.streak > 1 ? `<div class="hot-fire">🔥 ${p1.streak} MATCH STREAK</div>` : ''}
-            </div>
-            <div class="player-stats">
-                <div class="stat-row"><span class="label">WIN %</span><span class="stat-val" style="color:var(--p2-color)">${p2.winPct}%</span></div>
-                <div class="form-guide">${p2.form.map(f => `<div class="form-circle form-${f}"></div>`).join('')}</div>
-                ${p2.streak > 1 ? `<div class="hot-fire">🔥 ${p2.streak} MATCH STREAK</div>` : ''}
-            </div>
-        `;
+        const sorted = Object.keys(table).sort((a,b) => table[b].pts - table[a].pts);
+        document.getElementById('points-body').innerHTML = sorted.map(t => `
+            <tr><td>${t.split(' ').pop()}</td><td>${table[t].p}</td><td>${table[t].w}</td><td>${table[t].l}</td><td>${table[t].nr}</td><td style="color:var(--gold)">${table[t].pts}</td></tr>
+        `).join('');
 
+        // 3. Render Team Obsession
+        const histUI = (id, list) => document.getElementById(id).innerHTML = list.slice(-5).map(r => `<div class="form-circle form-${r}"></div>`).join('');
+        histUI('srh-history', srhH); histUI('kkr-history', kkrH);
+
+        // 4. Render Match Grid
         const grid = document.getElementById('grid');
-        const fragment = document.createDocumentFragment();
-
-        matches.forEach(m => {
+        grid.innerHTML = matches.map(m => {
             const pick = picks[m.id] || {};
-            const winner = results[m.id];
-            const isDone = !!winner;
-            const homeColor = teamColors[m.h] || '#1f2937';
-
-            const card = document.createElement('div');
-            card.className = `match-card ${isDone ? 'finished' : ''}`;
-            card.style.borderLeft = `6px solid ${homeColor}`;
-            
-            card.innerHTML = `
-                <div class="date">MATCH ${m.id} • ${m.date}</div>
-                <div class="vs-container">
-                    <button type="button" class="team-btn ${pick.p1 === m.h ? 'p1-picked' : ''} ${pick.p2 === m.h ? 'p2-picked' : ''}" 
-                            onclick="makePick(${m.id}, '${m.h}', '${m.a}')">${m.h}</button>
-                    <span style="margin:0 10px; font-weight:bold; color:#4b5563">VS</span>
-                    <button type="button" class="team-btn ${pick.p1 === m.a ? 'p1-picked' : ''} ${pick.p2 === m.a ? 'p2-picked' : ''}" 
-                            onclick="makePick(${m.id}, '${m.a}', '${m.h}')">${m.a}</button>
+            const win = results[m.id];
+            return `
+                <div class="match-card ${win ? 'finished' : ''}" style="border-left: 6px solid ${teamColors[m.h]}">
+                    <div class="date">MATCH ${m.id} • ${m.date}</div>
+                    <div class="vs-container">
+                        <button class="team-btn ${pick.p1===m.h?'p1-picked':''} ${pick.p2===m.h?'p2-picked':''}" onclick="makePick(${m.id},'${m.h}','${m.a}')">${m.h}</button>
+                        <span style="padding:0 5px; font-weight:bold; color:#4b5563">VS</span>
+                        <button class="team-btn ${pick.p1===m.a?'p1-picked':''} ${pick.p2===m.a?'p2-picked':''}" onclick="makePick(${m.id},'${m.a}','${m.h}')">${m.a}</button>
+                    </div>
+                    <button class="result-btn" ${win ? 'disabled' : ''} onclick="resolveMatch(${m.id}, '${m.h}', '${m.a}')">
+                        ${win ? `WINNER: ${win}` : 'DECLARE WINNER'}
+                    </button>
                 </div>
-                <button type="button" class="result-btn" ${isDone ? 'disabled' : ''} onclick="resolveMatch(${m.id}, '${m.h}', '${m.a}')">
-                    ${isDone ? 'COMPLETED' : 'DECLARE WINNER'}
-                </button>
-                ${isDone ? `<div class="winner-banner">🏆 WINNER: ${winner}</div>` : ''}
             `;
-            fragment.appendChild(card);
-        });
-
-        grid.innerHTML = '';
-        grid.appendChild(fragment);
+        }).join('');
     }
 
-    function makePick(matchId, selected, other) {
-        const updates = {};
-        updates[`picks/${matchId}/${myId}`] = selected;
-        updates[`picks/${matchId}/${otherId}`] = other;
-        db.ref('ipl_battle_2026').update(updates);
+    function makePick(id, sel, oth) {
+        const up = {}; up[`picks/${id}/${myId}`] = sel; up[`picks/${id}/${otherId}`] = oth;
+        db.ref('ipl_battle_2026').update(up);
     }
 
-    function resolveMatch(matchId, teamA, teamB) {
-        const winner = prompt(`Who won Match ${matchId}? Enter "${teamA}" or "${teamB}":`);
-        if (!winner) return;
-        
-        const norm = winner.trim();
-        if (norm !== teamA && norm !== teamB) { alert("Invalid team name."); return; }
-
-        db.ref('ipl_battle_2026').once('value', (snap) => {
-            const data = snap.val() || { picks: {}, results: {}, p1Score: 0, p2Score: 0 };
-            const matchPicks = data.picks ? data.picks[matchId] : null;
-            
-            if (!matchPicks) { alert("Select teams first!"); return; }
-
-            const p1Plus = (matchPicks.p1 === norm) ? 1 : 0;
-            const p2Plus = (matchPicks.p2 === norm) ? 1 : 0;
-
-            const updates = {};
-            updates[`results/${matchId}`] = norm;
-            updates[`p1Score`] = (data.p1Score || 0) + p1Plus;
-            updates[`p2Score`] = (data.p2Score || 0) + p2Plus;
-            db.ref('ipl_battle_2026').update(updates);
+    function resolveMatch(id, tA, tB) {
+        const res = prompt(`Match ${id} Result:\nType "${tA}", "${tB}", or "RAIN"`);
+        if (!res) return;
+        const norm = res.toUpperCase() === "RAIN" ? "RAIN" : res.trim();
+        db.ref('ipl_battle_2026').once('value', snap => {
+            const d = snap.val() || {};
+            const p = d.picks ? d.picks[id] : null;
+            const up = {}; up[`results/${id}`] = norm;
+            if (norm !== "RAIN" && p) {
+                if (p.p1 === norm) up[`p1Score`] = (d.p1Score || 0) + 1;
+                if (p.p2 === norm) up[`p2Score`] = (d.p2Score || 0) + 1;
+            }
+            db.ref('ipl_battle_2026').update(up);
         });
     }
 </script>
