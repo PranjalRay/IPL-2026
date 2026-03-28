@@ -124,6 +124,33 @@
             align-items: center; justify-content: center; color: #060b1a; font-weight: bold;
         }
 
+        /* --- CHAT STYLES --- */
+        #chat-container {
+            position: fixed; bottom: 20px; left: 20px; width: 280px; z-index: 1001;
+            background: rgba(17, 24, 39, 0.95); border: 1px solid var(--gold);
+            border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.3s;
+        }
+        #chat-header {
+            background: var(--gold); color: #060b1a; padding: 8px 12px; font-weight: bold;
+            font-family: 'Oxanium'; display: flex; justify-content: space-between; cursor: pointer;
+        }
+        #chat-messages {
+            height: 250px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px;
+        }
+        .chat-msg { font-size: 0.8rem; padding: 6px 10px; border-radius: 8px; max-width: 85%; line-height: 1.3; }
+        .msg-time { font-size: 0.6rem; opacity: 0.6; display: block; margin-top: 3px; }
+        .msg-p1 { align-self: flex-start; background: rgba(0, 242, 255, 0.15); border-left: 3px solid var(--p1-color); }
+        .msg-p2 { align-self: flex-end; background: rgba(255, 0, 123, 0.15); border-right: 3px solid var(--p2-color); text-align: right; }
+        #chat-input-area { display: flex; padding: 8px; border-top: 1px solid #374151; gap: 5px; }
+        #chat-input {
+            flex: 1; background: #1f2937; border: 1px solid #374151; border-radius: 4px;
+            color: white; padding: 5px; font-size: 0.8rem; outline: none;
+        }
+        #chat-send { background: var(--gold); border: none; border-radius: 4px; padding: 0 10px; cursor: pointer; font-weight: bold; }
+        .minimized #chat-messages, .minimized #chat-input-area { display: none; }
+        .minimized { width: 120px !important; }
+
         .footer-tools { text-align: center; margin-top: 40px; opacity: 0.3; font-size: 0.7rem; }
     </style>
 </head>
@@ -148,9 +175,20 @@
 
 <div id="resolve-modal" class="modal">
     <div class="label" style="font-size: 1rem; margin-bottom: 15px; color: var(--p1-color);">DECLARE WINNER</div>
-    <div id="resolve-options" style="display: flex; flex-direction: column;">
-        </div>
+    <div id="resolve-options" style="display: flex; flex-direction: column;"></div>
     <button onclick="closeResolveModal()" style="margin-top:10px; background:none; border:1px solid #ef4444; color:#ef4444; padding:8px 15px; border-radius:5px; cursor:pointer; font-family:'Oxanium'; font-weight:bold; width: 100%;">CANCEL</button>
+</div>
+
+<div id="chat-container" class="minimized">
+    <div id="chat-header" onclick="toggleChat()">
+        <span>BATTLE CHAT</span>
+        <span id="chat-toggle-icon">▲</span>
+    </div>
+    <div id="chat-messages"></div>
+    <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Taunt him..." onkeypress="if(event.key==='Enter') sendChat()">
+        <button id="chat-send" onclick="sendChat()">➤</button>
+    </div>
 </div>
 
 <div class="header">
@@ -332,6 +370,7 @@
     db.ref('ipl_battle_2026').on('value', snap => {
         currentData = snap.val() || {};
         render(currentData);
+        updateChat(currentData.chat || {});
     });
 
     window.addEventListener('online', () => document.body.classList.remove('offline'));
@@ -362,22 +401,56 @@
         closeEmojiPicker();
     }
 
-    // Modal logic for resolving matches
+    // --- CHAT LOGIC ---
+    function toggleChat() {
+        const chat = document.getElementById('chat-container');
+        const icon = document.getElementById('chat-toggle-icon');
+        chat.classList.toggle('minimized');
+        icon.innerText = chat.classList.contains('minimized') ? '▲' : '▼';
+    }
+
+    function sendChat() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if(!text) return;
+
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const newMsgKey = db.ref('ipl_battle_2026/chat').push().key;
+        
+        db.ref(`ipl_battle_2026/chat/${newMsgKey}`).set({
+            sender: myId,
+            text: text,
+            time: time,
+            timestamp: Date.now()
+        });
+        input.value = '';
+    }
+
+    function updateChat(chatData) {
+        const chatBox = document.getElementById('chat-messages');
+        const msgs = Object.values(chatData).sort((a,b) => a.timestamp - b.timestamp);
+        
+        chatBox.innerHTML = msgs.map(m => `
+            <div class="chat-msg msg-${m.sender}">
+                <strong>${m.sender === 'p1' ? 'SON' : 'DAD'}:</strong> ${m.text}
+                <span class="msg-time">${m.time}</span>
+            </div>
+        `).join('');
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
     function openResolveModal(id, tA, tB) {
         activeResolveMatch = { id, tA, tB };
         const modal = document.getElementById('resolve-modal');
         const optionsDiv = document.getElementById('resolve-options');
-        
         const dataA = teamData[tA];
         const dataB = teamData[tB];
 
-        // Generate buttons dynamically based on the match teams
         optionsDiv.innerHTML = `
             <button class="resolve-opt-btn" style="background: ${dataA.color}88; border: 2px solid ${dataA.color}" onclick="submitResult('${tA}')">🏆 ${dataA.abbr} WINS</button>
             <button class="resolve-opt-btn" style="background: ${dataB.color}88; border: 2px solid ${dataB.color}" onclick="submitResult('${tB}')">🏆 ${dataB.abbr} WINS</button>
             <button class="resolve-opt-btn" style="background: #374151; border: 2px solid #6b7280" onclick="submitResult('RAIN')">🌧️ RAIN / NO RESULT</button>
         `;
-        
         modal.style.display = 'block';
     }
 
@@ -388,7 +461,6 @@
 
     function submitResult(resInput) {
         if (!activeResolveMatch) return;
-        
         const { id, tA, tB } = activeResolveMatch;
         let res = resInput === 'RAIN' ? 'RAIN' : resInput;
 
@@ -404,7 +476,6 @@
             }
             db.ref('ipl_battle_2026').update(updates);
         });
-
         closeResolveModal();
     }
 
@@ -413,10 +484,7 @@
         const q = query.toLowerCase();
         const data = teamData[teamName];
         if (!data) return teamName.toLowerCase().includes(q);
-        
-        return teamName.toLowerCase().includes(q) || 
-               data.abbr.toLowerCase().includes(q) || 
-               (data.alias && data.alias.toLowerCase().includes(q));
+        return teamName.toLowerCase().includes(q) || data.abbr.toLowerCase().includes(q) || (data.alias && data.alias.toLowerCase().includes(q));
     }
 
     function scrollToLatest() {
@@ -459,18 +527,13 @@
             table[m.h].p++; table[m.a].p++;
             if (res === "RAIN") {
                 table[m.h].pts++; table[m.a].pts++;
-                teamHistory[m.h].push('NR');
-                teamHistory[m.a].push('NR');
+                teamHistory[m.h].push('NR'); teamHistory[m.a].push('NR');
             } else {
                 table[res].w++; table[res].pts += 2;
                 table[res === m.h ? m.a : m.h].l++;
-                
-                teamHistory[res].push('W');
-                teamHistory[res === m.h ? m.a : m.h].push('L');
-
+                teamHistory[res].push('W'); teamHistory[res === m.h ? m.a : m.h].push('L');
                 if (m.h.includes("Hyderabad") || m.a.includes("Hyderabad")) srhH.push(res.includes("Hyderabad") ? 'W' : 'L');
                 if (m.h.includes("Kolkata") || m.a.includes("Kolkata")) kkrH.push(res.includes("Kolkata") ? 'W' : 'L');
-                
                 const myPick = picks[m.id] ? picks[m.id][myId] : null;
                 if(myPick) userH.push(myPick === res ? 'W' : 'L');
             }
@@ -500,8 +563,8 @@
                 <td style="color:var(--gold); font-weight:bold;">${table[t].pts}</td>
                 <td><span style="font-size:0.7rem; color:var(--p1-color);">${nrrData[t] || '0.000'}</span></td>
                 <td style="text-align:center"><div class="form-circle form-${lastStatus}" style="margin: 0 auto; width: 18px; height: 18px; font-size: 9px;">${lastStatus === 'empty' ? '-' : lastStatus[0]}</div></td>
-            </tr>
-        `}).join('');
+            </tr>`
+        }).join('');
 
         document.getElementById('grid').innerHTML = matches
         .filter(m => matchesQuery(m.h, searchTerm) || matchesQuery(m.a, searchTerm))
@@ -535,7 +598,7 @@
     }
 
     function resetData() {
-        if(confirm("Wipe all data?")) db.ref('ipl_battle_2026').set({ p1Score: 0, p2Score: 0, results: {}, nrr: {}, avatars: { p1: '👦', p2: '👨' } });
+        if(confirm("Wipe all data?")) db.ref('ipl_battle_2026').set({ p1Score: 0, p2Score: 0, results: {}, nrr: {}, avatars: { p1: '👦', p2: '👨' }, chat: {} });
     }
 </script>
 </body>
