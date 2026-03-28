@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPL 2026 Tracker - Son vs Father</title>
+    <title>IPL 2026 Tracker - Full Season</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;700&family=Outfit:wght@300;600&display=swap" rel="stylesheet">
@@ -11,138 +11,120 @@
         :root {
             --bg: #060b1a; --card: #111827; --gold: #f59e0b;
             --p1-color: #00f2ff; --p2-color: #ff007b;
-            --cyber-grid: linear-gradient(0deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px), 
-                          linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
         }
         
-        body { 
-            font-family: 'Outfit', sans-serif; background: var(--bg); 
-            background-image: var(--cyber-grid); background-size: 50px 50px;
-            color: white; margin: 0; padding-bottom: 120px; scroll-behavior: smooth; 
-        }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: white; margin: 0; padding-bottom: 80px; }
         
         .header { 
-            position: sticky; top: 0; z-index: 1000; background: rgba(17, 24, 39, 0.85);
+            position: sticky; top: 0; z-index: 1000; background: #111827;
             padding: 15px; border-bottom: 2px solid var(--gold); 
             display: flex; justify-content: space-around; align-items: center; 
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
         }
 
-        .score-val { font-family: 'Oxanium'; font-size: 2.8rem; font-weight: 700; line-height: 1; }
-        #p1-display { color: var(--p1-color); text-shadow: 0 0 10px rgba(0,242,255,0.3); } 
-        #p2-display { color: var(--p2-color); text-shadow: 0 0 10px rgba(255,0,123,0.3); }
+        .score-val { font-family: 'Oxanium'; font-size: 2.5rem; font-weight: 700; }
+        #p1-display { color: var(--p1-color); } 
+        #p2-display { color: var(--p2-color); }
         .label { font-size: 0.7rem; letter-spacing: 2px; color: var(--gold); font-weight: 700; text-transform: uppercase; }
 
-        /* Master Statistics Collapsible */
-        .stats-details { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
-        .stats-summary { 
-            cursor: pointer; font-family: 'Oxanium'; background: rgba(31, 41, 55, 0.8);
-            padding: 15px; border-radius: 12px; border: 1px solid var(--gold); 
-            list-style: none; text-align: center; font-weight: bold; font-size: 1.1rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: 0.3s;
+        /* Statistics Collapsible */
+        .collapsible-stats { max-width: 1200px; margin: 15px auto; padding: 0 20px; }
+        .collapsible-stats summary { 
+            cursor: pointer; background: #1f2937; padding: 12px; border-radius: 8px; 
+            border: 1px solid #374151; list-style: none; text-align: center; font-family: 'Oxanium'; font-weight: bold;
         }
-        .stats-summary:hover { box-shadow: 0 0 20px var(--gold); transform: scale(1.01); }
-
-        .stats-content { 
-            background: rgba(17, 24, 39, 0.8); border-radius: 0 0 12px 12px; 
-            padding: 20px; margin-top: -5px; border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        /* Fav Teams Row inside Stats */
-        .fav-teams-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .fav-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; text-align: center; border-left: 4px solid var(--gold); }
-
-        table { width: 100%; border-collapse: collapse; font-family: 'Oxanium'; font-size: 0.75rem; color: #e5e7eb; }
-        th { border-bottom: 2px solid rgba(255,255,255,0.1); padding: 12px; color: var(--gold); text-align: left; }
-        td { padding: 12px 8px; border-bottom: 1px solid rgba(255,255,255,0.03); }
-
-        /* Form Guide Circles */
-        .form-guide { display: flex; gap: 4px; }
-        .form-circle { 
-            width: 16px; height: 16px; border-radius: 50%; background: #374151; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 9px; font-weight: bold; color: white;
-        }
-        .form-W { background: #10b981; box-shadow: 0 0 8px #10b981; }
-        .form-L { background: #ef4444; }
-        .form-NR { background: #6b7280; }
-
-        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto; }
-        .match-card { 
-            background: rgba(17, 24, 39, 0.7); border-radius: 12px; padding: 20px; 
-            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
-            transition: 0.3s; position: relative;
-        }
-        .match-card:hover { transform: translateY(-5px); }
-        .match-card.finished { border-color: #10b981 !important; box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
-
-        .team-btn { 
-            flex: 1; padding: 12px 5px; border: 2px solid #374151; border-radius: 8px; 
-            background: #1f2937; color: white; cursor: pointer; font-family: 'Oxanium'; font-size: 0.75rem; transition: 0.2s;
-        }
-        .p1-picked { border-color: var(--p1-color) !important; background: #002a2e !important; box-shadow: 0 0 10px var(--p1-color); }
-        .p2-picked { border-color: var(--p2-color) !important; background: #2e001a !important; box-shadow: 0 0 10px var(--p2-color); }
-
-        .fab {
-            position: fixed; bottom: 25px; right: 25px; width: 55px; height: 55px;
-            background: var(--gold); color: #060b1a; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-weight: bold;
-            cursor: pointer; z-index: 1000; border: none; font-family: 'Oxanium';
+        .stats-grid-box { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 15px; margin-top: 10px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;
         }
         
-        .footer-tools { text-align: center; margin-top: 60px; opacity: 0.3; font-size: 0.7rem; }
+        .form-row { display: flex; gap: 5px; justify-content: center; margin-top: 10px; }
+        .form-circle { 
+            width: 22px; height: 22px; border-radius: 50%; display: flex; 
+            align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .form-W { background: #10b981; box-shadow: 0 0 5px #10b981; } 
+        .form-L { background: #ef4444; } 
+        .form-NR { background: #6b7280; }
+        .form-empty { border: 1px dashed #4b5563; color: #4b5563; }
+
+        /* Points Table (Separate Section) */
+        .points-table-container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        table { width: 100%; border-collapse: collapse; font-family: 'Oxanium'; font-size: 0.85rem; background: #111827; border-radius: 8px; overflow: hidden; }
+        th { border-bottom: 2px solid #374151; padding: 12px; color: var(--gold); text-align: left; background: #1f2937; }
+        td { padding: 12px; border-bottom: 1px solid #1f2937; }
+        
+        .nrr-btn { background: #374151; color: var(--p1-color); border: none; border-radius: 4px; padding: 2px 5px; cursor: pointer; font-size: 0.6rem; margin-left: 5px; font-family: 'Oxanium'; }
+
+        /* Match Cards Grid */
+        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .match-card { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid #1f2937; transition: 0.3s; }
+        .match-card.finished { border-color: #10b981; background: #0c121d; }
+
+        .team-row { display: flex; gap: 10px; margin: 15px 0; }
+        .team-btn { 
+            flex: 1; padding: 12px 5px; border: 2px solid #374151; border-radius: 8px; 
+            background: #1f2937; color: white; cursor: pointer; font-family: 'Oxanium'; font-size: 0.8rem;
+        }
+        .p1-picked { border-color: var(--p1-color) !important; background: #002a2e !important; box-shadow: 0 0 8px var(--p1-color); }
+        .p2-picked { border-color: var(--p2-color) !important; background: #2e001a !important; box-shadow: 0 0 8px var(--p2-color); }
+
+        .result-btn { width: 100%; padding: 12px; background: var(--gold); border: none; border-radius: 6px; font-family: 'Oxanium'; font-weight: bold; cursor: pointer; color: #060b1a; }
+        .result-btn:disabled { background: #1f2937; color: #4b5563; cursor: not-allowed; }
+        
+        #btn-top { position: fixed; bottom: 20px; right: 20px; background: var(--gold); border: none; padding: 10px 15px; border-radius: 50%; font-weight: bold; cursor: pointer; display: none; z-index: 999; }
+        .footer-tools { text-align: center; margin-top: 40px; opacity: 0.3; font-size: 0.7rem; }
     </style>
 </head>
 <body>
 
-<div class="header" id="main-header">
-    <div class="score-box">
+<div class="header">
+    <div class="score-box" style="text-align:center">
         <div class="label">SON</div>
         <div id="p1-display" class="score-val">0</div>
     </div>
-    <div style="text-align:center"><img src="https://pngimg.com/uploads/cricket/cricket_PNG23.png" width="40"></div>
-    <div class="score-box">
+    <div style="font-family:'Oxanium'; font-weight:bold; color:var(--gold)">VS</div>
+    <div class="score-box" style="text-align:center">
         <div class="label">FATHER</div>
         <div id="p2-display" class="score-val">0</div>
     </div>
 </div>
 
-<details class="stats-details">
-    <summary class="stats-summary">📊 VIEW SEASON STATISTICS</summary>
-    <div class="stats-content">
-        <div class="fav-teams-row">
-            <div class="fav-card" style="border-color: #ff822a;">
-                <div class="label" style="color:#ff822a">SRH (SON)</div>
-                <div id="srh-history" class="form-guide" style="justify-content:center; margin-top:10px;"></div>
-            </div>
-            <div class="fav-card" style="border-color: #3a225d;">
-                <div class="label" style="color:#3a225d">KKR (DAD)</div>
-                <div id="kkr-history" class="form-guide" style="justify-content:center; margin-top:10px;"></div>
+<details class="collapsible-stats">
+    <summary>📊 BATTLE STATISTICS & FORM</summary>
+    <div class="stats-grid-box">
+        <div style="text-align: center; border: 1px solid #374151; padding: 15px; border-radius: 8px;">
+            <div class="label">MY BATTLE WIN %</div>
+            <div id="win-pct" style="font-size: 2rem; font-family: 'Oxanium'; color: var(--p1-color); margin-top: 5px;">0%</div>
+        </div>
+        <div style="text-align: center; border: 1px solid #374151; padding: 15px; border-radius: 8px;">
+            <div class="label">MY LAST 5 (BATTLE)</div>
+            <div id="user-history" class="form-row"></div>
+        </div>
+        <div style="text-align: center; border: 1px solid #374151; padding: 15px; border-radius: 8px;">
+            <div class="label">TEAM FORM (LAST 5)</div>
+            <div style="display:flex; justify-content: space-around; margin-top: 10px;">
+                <div><div style="font-size: 0.6rem; color:#ff822a; font-weight:bold;">SRH</div><div id="srh-form" class="form-row"></div></div>
+                <div><div style="font-size: 0.6rem; color:#3a225d; font-weight:bold;">KKR</div><div id="kkr-form" class="form-row"></div></div>
             </div>
         </div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>TEAM</th>
-                    <th>P</th>
-                    <th>PTS</th>
-                    <th>WIN %</th>
-                    <th>FORM (LAST 5)</th>
-                </tr>
-            </thead>
-            <tbody id="points-body"></tbody>
-        </table>
     </div>
 </details>
 
+<div class="points-table-container">
+    <div class="label" style="margin-bottom: 10px;">SEASON POINTS TABLE</div>
+    <table>
+        <thead><tr><th>TEAM</th><th>P</th><th>W</th><th>L</th><th>PTS</th><th>NRR</th></tr></thead>
+        <tbody id="points-body"></tbody>
+    </table>
+</div>
+
 <div id="grid" class="container"></div>
 
-<button class="fab" onclick="window.scrollTo(0,0)">TOP</button>
+<button id="btn-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</button>
 
 <div class="footer-tools">
-    <button onclick="resetData()" style="background:none; border:none; color:red; cursor:pointer;">Reset Battle Data</button>
+    <button onclick="resetData()" style="background:none; border:none; color:red; cursor:pointer;">Reset All Battle Data</button>
 </div>
 
 <script>
@@ -158,7 +140,8 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const myId = new URLSearchParams(window.location.search).get('user') || 'p1';
+    const params = new URLSearchParams(window.location.search);
+    const myId = params.get('user') || 'p1';
     const otherId = myId === 'p1' ? 'p2' : 'p1';
 
     const teamColors = {
@@ -170,76 +153,76 @@
     };
 
     const matches = [
-        { id: 1, date: "28-MAR-2026", h: "Royal Challengers Bengaluru", a: "Sunrisers Hyderabad" },
-        { id: 2, date: "29-MAR-2026", h: "Mumbai Indians", a: "Kolkata Knight Riders" },
-        { id: 3, date: "30-MAR-2026", h: "Rajasthan Royals", a: "Chennai Super Kings" },
-        { id: 4, date: "31-MAR-2026", h: "Punjab Kings", a: "Gujarat Titans" },
-        { id: 5, date: "01-APR-2026", h: "Lucknow Super Giants", a: "Delhi Capitals" },
-        { id: 6, date: "02-APR-2026", h: "Kolkata Knight Riders", a: "Sunrisers Hyderabad" },
-        { id: 7, date: "03-APR-2026", h: "Chennai Super Kings", a: "Punjab Kings" },
-        { id: 8, date: "04-APR-2026", h: "Delhi Capitals", a: "Mumbai Indians" },
-        { id: 9, date: "04-APR-2026", h: "Gujarat Titans", a: "Rajasthan Royals" },
-        { id: 10, date: "05-APR-2026", h: "Sunrisers Hyderabad", a: "Lucknow Super Giants" },
-        { id: 11, date: "05-APR-2026", h: "Royal Challengers Bengaluru", a: "Chennai Super Kings" },
-        { id: 12, date: "06-APR-2026", h: "Kolkata Knight Riders", a: "Punjab Kings" },
-        { id: 13, date: "07-APR-2026", h: "Rajasthan Royals", a: "Mumbai Indians" },
-        { id: 14, date: "08-APR-2026", h: "Delhi Capitals", a: "Gujarat Titans" },
-        { id: 15, date: "09-APR-2026", h: "Kolkata Knight Riders", a: "Lucknow Super Giants" },
-        { id: 16, date: "10-APR-2026", h: "Rajasthan Royals", a: "Royal Challengers Bengaluru" },
-        { id: 17, date: "11-APR-2026", h: "Punjab Kings", a: "Sunrisers Hyderabad" },
-        { id: 18, date: "11-APR-2026", h: "Chennai Super Kings", a: "Delhi Capitals" },
-        { id: 19, date: "12-APR-2026", h: "Lucknow Super Giants", a: "Gujarat Titans" },
-        { id: 20, date: "12-APR-2026", h: "Mumbai Indians", a: "Royal Challengers Bengaluru" },
-        { id: 21, date: "13-APR-2026", h: "Sunrisers Hyderabad", a: "Rajasthan Royals" },
-        { id: 22, date: "14-APR-2026", h: "Chennai Super Kings", a: "Kolkata Knight Riders" },
-        { id: 23, date: "15-APR-2026", h: "Royal Challengers Bengaluru", a: "Lucknow Super Giants" },
-        { id: 24, date: "16-APR-2026", h: "Mumbai Indians", a: "Punjab Kings" },
-        { id: 25, date: "17-APR-2026", h: "Gujarat Titans", a: "Kolkata Knight Riders" },
-        { id: 26, date: "18-APR-2026", h: "Royal Challengers Bengaluru", a: "Delhi Capitals" },
-        { id: 27, date: "18-APR-2026", h: "Sunrisers Hyderabad", a: "Chennai Super Kings" },
-        { id: 28, date: "19-APR-2026", h: "Kolkata Knight Riders", a: "Rajasthan Royals" },
-        { id: 29, date: "19-APR-2026", h: "Punjab Kings", a: "Lucknow Super Giants" },
-        { id: 30, date: "20-APR-2026", h: "Gujarat Titans", a: "Mumbai Indians" },
-        { id: 31, date: "21-APR-2026", h: "Sunrisers Hyderabad", a: "Delhi Capitals" },
-        { id: 32, date: "22-APR-2026", h: "Lucknow Super Giants", a: "Rajasthan Royals" },
-        { id: 33, date: "23-APR-2026", h: "Mumbai Indians", a: "Chennai Super Kings" },
-        { id: 34, date: "24-APR-2026", h: "Royal Challengers Bengaluru", a: "Gujarat Titans" },
-        { id: 35, date: "25-APR-2026", h: "Delhi Capitals", a: "Punjab Kings" },
-        { id: 36, date: "25-APR-2026", h: "Rajasthan Royals", a: "Sunrisers Hyderabad" },
-        { id: 37, date: "26-APR-2026", h: "Gujarat Titans", a: "Chennai Super Kings" },
-        { id: 38, date: "26-APR-2026", h: "Lucknow Super Giants", a: "Kolkata Knight Riders" },
-        { id: 39, date: "27-APR-2026", h: "Delhi Capitals", a: "Royal Challengers Bengaluru" },
-        { id: 40, date: "28-APR-2026", h: "Punjab Kings", a: "Rajasthan Royals" },
-        { id: 41, date: "29-MAR-2026", h: "Mumbai Indians", a: "Sunrisers Hyderabad" },
-        { id: 42, date: "30-APR-2026", h: "Gujarat Titans", a: "Royal Challengers Bengaluru" },
-        { id: 43, date: "01-MAY-2026", h: "Rajasthan Royals", a: "Delhi Capitals" },
-        { id: 44, date: "02-MAY-2026", h: "Chennai Super Kings", a: "Mumbai Indians" },
-        { id: 45, date: "03-MAY-2026", h: "Sunrisers Hyderabad", a: "Kolkata Knight Riders" },
-        { id: 46, date: "03-MAY-2026", h: "Gujarat Titans", a: "Punjab Kings" },
-        { id: 47, date: "04-MAY-2026", h: "Mumbai Indians", a: "Lucknow Super Giants" },
-        { id: 48, date: "05-MAY-2026", h: "Delhi Capitals", a: "Chennai Super Kings" },
-        { id: 49, date: "06-MAY-2026", h: "Sunrisers Hyderabad", a: "Punjab Kings" },
-        { id: 50, date: "07-MAY-2026", h: "Lucknow Super Giants", a: "Royal Challengers Bengaluru" },
-        { id: 51, date: "08-MAY-2026", h: "Delhi Capitals", a: "Kolkata Knight Riders" },
-        { id: 52, date: "09-MAY-2026", h: "Rajasthan Royals", a: "Gujarat Titans" },
-        { id: 53, date: "10-MAY-2026", h: "Chennai Super Kings", a: "Lucknow Super Giants" },
-        { id: 54, date: "10-MAY-2026", h: "Royal Challengers Bengaluru", a: "Mumbai Indians" },
-        { id: 55, date: "11-MAY-2026", h: "Punjab Kings", a: "Delhi Capitals" },
-        { id: 56, date: "12-MAY-2026", h: "Gujarat Titans", a: "Sunrisers Hyderabad" },
-        { id: 57, date: "13-MAY-2026", h: "Royal Challengers Bengaluru", a: "Kolkata Knight Riders" },
-        { id: 58, date: "14-MAY-2026", h: "Punjab Kings", a: "Mumbai Indians" },
-        { id: 59, date: "15-MAY-2026", h: "Lucknow Super Giants", a: "Chennai Super Kings" },
-        { id: 60, date: "16-MAY-2026", h: "Kolkata Knight Riders", a: "Gujarat Titans" },
-        { id: 61, date: "17-MAY-2026", h: "Punjab Kings", a: "Royal Challengers Bengaluru" },
-        { id: 62, date: "17-MAY-2026", h: "Delhi Capitals", a: "Rajasthan Royals" },
-        { id: 63, date: "18-MAY-2026", h: "Chennai Super Kings", a: "Sunrisers Hyderabad" },
-        { id: 64, date: "19-MAY-2026", h: "Rajasthan Royals", a: "Lucknow Super Giants" },
-        { id: 65, date: "20-MAY-2026", h: "Kolkata Knight Riders", a: "Mumbai Indians" },
-        { id: 66, date: "21-MAY-2026", h: "Chennai Super Kings", a: "Gujarat Titans" },
-        { id: 67, date: "22-MAY-2026", h: "Sunrisers Hyderabad", a: "Royal Challengers Bengaluru" },
-        { id: 68, date: "23-MAY-2026", h: "Lucknow Super Giants", a: "Punjab Kings" },
-        { id: 69, date: "24-MAY-2026", h: "Mumbai Indians", a: "Rajasthan Royals" },
-        { id: 70, date: "24-MAY-2026", h: "Kolkata Knight Riders", a: "Delhi Capitals" }
+        { id: 1, date: "28-MAR-26", h: "Royal Challengers Bengaluru", a: "Sunrisers Hyderabad" },
+        { id: 2, date: "29-MAR-26", h: "Mumbai Indians", a: "Kolkata Knight Riders" },
+        { id: 3, date: "30-MAR-26", h: "Rajasthan Royals", a: "Chennai Super Kings" },
+        { id: 4, date: "31-MAR-26", h: "Punjab Kings", a: "Gujarat Titans" },
+        { id: 5, date: "01-APR-26", h: "Lucknow Super Giants", a: "Delhi Capitals" },
+        { id: 6, date: "02-APR-26", h: "Kolkata Knight Riders", a: "Sunrisers Hyderabad" },
+        { id: 7, date: "03-APR-26", h: "Chennai Super Kings", a: "Punjab Kings" },
+        { id: 8, date: "04-APR-26", h: "Delhi Capitals", a: "Mumbai Indians" },
+        { id: 9, date: "04-APR-26", h: "Gujarat Titans", a: "Rajasthan Royals" },
+        { id: 10, date: "05-APR-26", h: "Sunrisers Hyderabad", a: "Lucknow Super Giants" },
+        { id: 11, date: "05-APR-26", h: "Royal Challengers Bengaluru", a: "Chennai Super Kings" },
+        { id: 12, date: "06-APR-26", h: "Kolkata Knight Riders", a: "Punjab Kings" },
+        { id: 13, date: "07-APR-26", h: "Rajasthan Royals", a: "Mumbai Indians" },
+        { id: 14, date: "08-APR-26", h: "Delhi Capitals", a: "Gujarat Titans" },
+        { id: 15, date: "09-APR-26", h: "Kolkata Knight Riders", a: "Lucknow Super Giants" },
+        { id: 16, date: "10-APR-26", h: "Rajasthan Royals", a: "Royal Challengers Bengaluru" },
+        { id: 17, date: "11-APR-26", h: "Punjab Kings", a: "Sunrisers Hyderabad" },
+        { id: 18, date: "11-APR-26", h: "Chennai Super Kings", a: "Delhi Capitals" },
+        { id: 19, date: "12-APR-26", h: "Lucknow Super Giants", a: "Gujarat Titans" },
+        { id: 20, date: "12-APR-26", h: "Mumbai Indians", a: "Royal Challengers Bengaluru" },
+        { id: 21, date: "13-APR-26", h: "Sunrisers Hyderabad", a: "Rajasthan Royals" },
+        { id: 22, date: "14-APR-26", h: "Chennai Super Kings", a: "Kolkata Knight Riders" },
+        { id: 23, date: "15-APR-26", h: "Royal Challengers Bengaluru", a: "Lucknow Super Giants" },
+        { id: 24, date: "16-APR-26", h: "Mumbai Indians", a: "Punjab Kings" },
+        { id: 25, date: "17-APR-26", h: "Gujarat Titans", a: "Kolkata Knight Riders" },
+        { id: 26, date: "18-APR-26", h: "Royal Challengers Bengaluru", a: "Delhi Capitals" },
+        { id: 27, date: "18-APR-26", h: "Sunrisers Hyderabad", a: "Chennai Super Kings" },
+        { id: 28, date: "19-APR-26", h: "Kolkata Knight Riders", a: "Rajasthan Royals" },
+        { id: 29, date: "19-APR-26", h: "Punjab Kings", a: "Lucknow Super Giants" },
+        { id: 30, date: "20-APR-26", h: "Gujarat Titans", a: "Mumbai Indians" },
+        { id: 31, date: "21-APR-26", h: "Sunrisers Hyderabad", a: "Delhi Capitals" },
+        { id: 32, date: "22-APR-26", h: "Lucknow Super Giants", a: "Rajasthan Royals" },
+        { id: 33, date: "23-APR-26", h: "Mumbai Indians", a: "Chennai Super Kings" },
+        { id: 34, date: "24-APR-26", h: "Royal Challengers Bengaluru", a: "Gujarat Titans" },
+        { id: 35, date: "25-APR-26", h: "Delhi Capitals", a: "Punjab Kings" },
+        { id: 36, date: "25-APR-26", h: "Rajasthan Royals", a: "Sunrisers Hyderabad" },
+        { id: 37, date: "26-APR-26", h: "Gujarat Titans", a: "Chennai Super Kings" },
+        { id: 38, date: "26-APR-26", h: "Lucknow Super Giants", a: "Kolkata Knight Riders" },
+        { id: 39, date: "27-APR-26", h: "Delhi Capitals", a: "Royal Challengers Bengaluru" },
+        { id: 40, date: "28-APR-26", h: "Punjab Kings", a: "Rajasthan Royals" },
+        { id: 41, date: "29-APR-26", h: "Mumbai Indians", a: "Sunrisers Hyderabad" },
+        { id: 42, date: "30-APR-26", h: "Gujarat Titans", a: "Royal Challengers Bengaluru" },
+        { id: 43, date: "01-MAY-26", h: "Rajasthan Royals", a: "Delhi Capitals" },
+        { id: 44, date: "02-MAY-26", h: "Chennai Super Kings", a: "Mumbai Indians" },
+        { id: 45, date: "03-MAY-26", h: "Sunrisers Hyderabad", a: "Kolkata Knight Riders" },
+        { id: 46, date: "03-MAY-26", h: "Gujarat Titans", a: "Punjab Kings" },
+        { id: 47, date: "04-MAY-26", h: "Mumbai Indians", a: "Lucknow Super Giants" },
+        { id: 48, date: "05-MAY-26", h: "Delhi Capitals", a: "Chennai Super Kings" },
+        { id: 49, date: "06-MAY-26", h: "Sunrisers Hyderabad", a: "Punjab Kings" },
+        { id: 50, date: "07-MAY-26", h: "Lucknow Super Giants", a: "Royal Challengers Bengaluru" },
+        { id: 51, date: "08-MAY-26", h: "Delhi Capitals", a: "Kolkata Knight Riders" },
+        { id: 52, date: "09-MAY-26", h: "Rajasthan Royals", a: "Gujarat Titans" },
+        { id: 53, date: "10-MAY-26", h: "Chennai Super Kings", a: "Lucknow Super Giants" },
+        { id: 54, date: "10-MAY-26", h: "Royal Challengers Bengaluru", a: "Mumbai Indians" },
+        { id: 55, date: "11-MAY-26", h: "Punjab Kings", a: "Delhi Capitals" },
+        { id: 56, date: "12-MAY-26", h: "Gujarat Titans", a: "Sunrisers Hyderabad" },
+        { id: 57, date: "13-MAY-26", h: "Royal Challengers Bengaluru", a: "Kolkata Knight Riders" },
+        { id: 58, date: "14-MAY-26", h: "Punjab Kings", a: "Mumbai Indians" },
+        { id: 59, date: "15-MAY-26", h: "Lucknow Super Giants", a: "Chennai Super Kings" },
+        { id: 60, date: "16-MAY-26", h: "Kolkata Knight Riders", a: "Gujarat Titans" },
+        { id: 61, date: "17-MAY-26", h: "Punjab Kings", a: "Royal Challengers Bengaluru" },
+        { id: 62, date: "17-MAY-26", h: "Delhi Capitals", a: "Rajasthan Royals" },
+        { id: 63, date: "18-MAY-26", h: "Chennai Super Kings", a: "Sunrisers Hyderabad" },
+        { id: 64, date: "19-MAY-26", h: "Rajasthan Royals", a: "Lucknow Super Giants" },
+        { id: 65, date: "20-MAY-26", h: "Kolkata Knight Riders", a: "Mumbai Indians" },
+        { id: 66, date: "21-MAY-26", h: "Chennai Super Kings", a: "Gujarat Titans" },
+        { id: 67, date: "22-MAY-26", h: "Sunrisers Hyderabad", a: "Royal Challengers Bengaluru" },
+        { id: 68, date: "23-MAY-26", h: "Lucknow Super Giants", a: "Punjab Kings" },
+        { id: 69, date: "24-MAY-26", h: "Mumbai Indians", a: "Rajasthan Royals" },
+        { id: 70, date: "24-MAY-26", h: "Kolkata Knight Riders", a: "Delhi Capitals" }
     ];
 
     db.ref('ipl_battle_2026').on('value', snap => {
@@ -247,103 +230,125 @@
         render(data);
     });
 
+    window.onscroll = function() {
+        document.getElementById("btn-top").style.display = window.scrollY > 500 ? "block" : "none";
+    };
+
     function render(data) {
         const results = data.results || {};
         const picks = data.picks || {};
-        
+        const nrrData = data.nrr || {};
+        const p1Score = data.p1Score || 0;
+        const p2Score = data.p2Score || 0;
+
+        document.getElementById('p1-display').innerText = p1Score;
+        document.getElementById('p2-display').innerText = p2Score;
+
         let table = {};
-        let histories = {};
-        Object.keys(teamColors).forEach(t => {
-            table[t] = { p: 0, w: 0, l: 0, pts: 0 };
-            histories[t] = [];
-        });
+        let srhH = [], kkrH = [], userH = [];
+        Object.keys(teamColors).forEach(t => table[t] = { p: 0, w: 0, l: 0, pts: 0 });
 
         matches.forEach(m => {
             const res = results[m.id];
             if (!res) return;
+
             table[m.h].p++; table[m.a].p++;
             if (res === "RAIN") {
                 table[m.h].pts++; table[m.a].pts++;
-                histories[m.h].push('NR'); histories[m.a].push('NR');
+                if(m.h.includes("Hyderabad") || m.a.includes("Hyderabad")) srhH.push('NR');
+                if(m.h.includes("Kolkata") || m.a.includes("Kolkata")) kkrH.push('NR');
             } else {
                 table[res].w++; table[res].pts += 2;
-                const loser = (res === m.h) ? m.a : m.h;
+                const loser = res === m.h ? m.a : m.h;
                 table[loser].l++;
-                histories[res].push('W'); histories[loser].push('L');
+                
+                if (m.h.includes("Hyderabad") || m.a.includes("Hyderabad")) srhH.push(res.includes("Hyderabad") ? 'W' : 'L');
+                if (m.h.includes("Kolkata") || m.a.includes("Kolkata")) kkrH.push(res.includes("Kolkata") ? 'W' : 'L');
+                
+                const myPick = picks[m.id] ? picks[m.id][myId] : null;
+                if(myPick) userH.push(myPick === res ? 'W' : 'L');
             }
         });
 
-        document.getElementById('p1-display').innerText = data.p1Score || 0;
-        document.getElementById('p2-display').innerText = data.p2Score || 0;
+        const myActualScore = myId === 'p1' ? p1Score : p2Score;
+        const totalPlayed = Object.keys(results).length;
+        document.getElementById('win-pct').innerText = totalPlayed > 0 ? Math.round((myActualScore / totalPlayed) * 100) + "%" : "0%";
 
-        const sorted = Object.keys(table).sort((a,b) => table[b].pts - table[a].pts);
-
-        document.getElementById('points-body').innerHTML = sorted.map(t => {
-            const winPct = table[t].p > 0 ? ((table[t].w / table[t].p) * 100).toFixed(1) : "0.0";
-            const form = histories[t].slice(-5).map(r => `<div class="form-circle form-${r}">${r[0]}</div>`).join('');
-            return `
-                <tr>
-                    <td style="color:${teamColors[t]}; font-weight:bold;">${t.split(' ').pop()}</td>
-                    <td>${table[t].p}</td>
-                    <td style="color:var(--gold); font-weight:bold;">${table[t].pts}</td>
-                    <td>${winPct}%</td>
-                    <td><div class="form-guide">${form}</div></td>
-                </tr>
-            `}).join('');
-
-        const updateFav = (id, teamName) => {
-            const list = histories[teamName] || [];
-            const last5 = list.slice(-5);
-            while(last5.length < 5) last5.unshift('Pending');
-            document.getElementById(id).innerHTML = last5.map(r => `<div class="form-circle form-${r}">${r==='Pending'?'?':r[0]}</div>`).join('');
+        const genCircles = (arr) => {
+            let last5 = arr.slice(-5);
+            while(last5.length < 5) last5.push('empty');
+            return last5.map(r => `<div class="form-circle form-${r}">${r === 'empty' ? '-' : r[0]}</div>`).join('');
         };
-        updateFav('srh-history', 'Sunrisers Hyderabad');
-        updateFav('kkr-history', 'Kolkata Knight Riders');
+        document.getElementById('user-history').innerHTML = genCircles(userH);
+        document.getElementById('srh-form').innerHTML = genCircles(srhH);
+        document.getElementById('kkr-form').innerHTML = genCircles(kkrH);
 
-        const grid = document.getElementById('grid');
-        grid.innerHTML = matches.map(m => {
+        // Sorting by Points first, then by NRR to break ties
+        const sorted = Object.keys(table).sort((a,b) => (table[b].pts - table[a].pts) || (parseFloat(nrrData[b]||0) - parseFloat(nrrData[a]||0)));
+        
+        document.getElementById('points-body').innerHTML = sorted.map(t => `
+            <tr>
+                <td style="color:${teamColors[t]}; font-weight:600">${t.split(' ').pop()}</td>
+                <td>${table[t].p}</td>
+                <td>${table[t].w}</td>
+                <td>${table[t].l}</td>
+                <td style="color:var(--gold); font-weight:bold;">${table[t].pts}</td>
+                <td><span style="font-size:0.7rem; color:var(--p1-color);">${nrrData[t] || '0.000'}</span> <button class="nrr-btn" onclick="updateNRR('${t}')">✎</button></td>
+            </tr>
+        `).join('');
+
+        document.getElementById('grid').innerHTML = matches.map(m => {
             const pick = picks[m.id] || {};
             const win = results[m.id];
             return `
-                <div class="match-card ${win ? 'finished' : ''}" style="border-left: 6px solid ${teamColors[m.h]}">
-                    <div class="date">MATCH ${m.id} • ${m.date}</div>
-                    <div class="vs-container">
-                        <button class="team-btn ${pick.p1===m.h?'p1-picked':''} ${pick.p2===m.h?'p2-picked':''}" onclick="makePick(${m.id},'${m.h}','${m.a}')">${m.h}</button>
-                        <span style="font-weight:bold; color:#4b5563; font-size:0.7rem; padding: 0 5px;">VS</span>
-                        <button class="team-btn ${pick.p1===m.a?'p1-picked':''} ${pick.p2===m.a?'p2-picked':''}" onclick="makePick(${m.id},'${m.a}','${m.h}')">${m.a}</button>
+                <div class="match-card ${win ? 'finished' : ''}">
+                    <div class="label" style="font-size:0.6rem; color:#9ca3af">Match ${m.id} • ${m.date}</div>
+                    <div class="team-row">
+                        <button class="team-btn ${pick.p1===m.h?'p1-picked':''} ${pick.p2===m.h?'p2-picked':''}" onclick="makePick(${m.id},'${m.h}','${m.a}')">${m.h.split(' ').pop()}</button>
+                        <button class="team-btn ${pick.p1===m.a?'p1-picked':''} ${pick.p2===m.a?'p2-picked':''}" onclick="makePick(${m.id},'${m.a}','${m.h}')">${m.a.split(' ').pop()}</button>
                     </div>
-                    <button class="result-btn" ${win ? 'disabled' : ''} onclick="resolveMatch(${m.id}, '${m.h}', '${m.a}')">
-                        ${win ? `WINNER: ${win}` : 'DECLARE WINNER'}
+                    <button class="result-btn" ${win ? 'disabled' : ''} onclick="resolve(${m.id},'${m.h}','${m.a}')">
+                        ${win ? 'WINNER: ' + win.split(' ').pop() : 'DECLARE WINNER'}
                     </button>
                 </div>
             `;
         }).join('');
     }
 
-    function makePick(id, sel, oth) {
-        const up = {}; up[`picks/${id}/${myId}`] = sel; up[`picks/${id}/${otherId}`] = oth;
-        db.ref('ipl_battle_2026').update(up);
+    function updateNRR(teamName) {
+        const val = prompt(`Enter NRR for ${teamName}:`, "0.000");
+        if (val === null) return;
+        db.ref('ipl_battle_2026/nrr').update({ [teamName]: parseFloat(val).toFixed(3) });
     }
 
-    function resolveMatch(id, tA, tB) {
-        const res = prompt(`Winner of Match ${id}:\nType "${tA}", "${tB}", or "RAIN"`);
+    function makePick(id, sel, oth) {
+        const updates = {};
+        updates[`picks/${id}/${myId}`] = sel;
+        updates[`picks/${id}/${otherId}`] = oth;
+        db.ref('ipl_battle_2026').update(updates);
+    }
+
+    function resolve(id, tA, tB) {
+        const res = prompt(`Enter Winner: "${tA}", "${tB}", or "RAIN"`);
         if (!res) return;
         const norm = res.trim();
         db.ref('ipl_battle_2026').once('value', snap => {
             const d = snap.val() || {};
             const p = d.picks ? d.picks[id] : null;
-            const up = {}; 
-            up[`results/${id}`] = norm;
+            const updates = {};
+            updates[`results/${id}`] = norm;
+            
+            // Independent check for Son and Father scoring
             if (norm !== "RAIN" && p) {
-                if (p.p1 === norm) up[`p1Score`] = (d.p1Score || 0) + 1;
-                if (p.p2 === norm) up[`p2Score`] = (d.p2Score || 0) + 1;
+                if (p.p1 === norm) updates['p1Score'] = (d.p1Score || 0) + 1;
+                if (p.p2 === norm) updates['p2Score'] = (d.p2Score || 0) + 1;
             }
-            db.ref('ipl_battle_2026').update(up);
+            db.ref('ipl_battle_2026').update(updates);
         });
     }
 
     function resetData() {
-        if(confirm("Wipe all season data?")) {
+        if(confirm("Are you sure you want to wipe all match results and scores?")) {
             db.ref('ipl_battle_2026').set({ p1Score: 0, p2Score: 0, results: {}, nrr: {} });
         }
     }
