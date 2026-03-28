@@ -199,7 +199,6 @@
 <div id="grid" class="container"></div>
 
 <div class="float-actions">
-    <button id="btn-latest" class="float-btn" onclick="scrollToLatest()" title="Latest Match">↓</button>
     <button id="btn-top" class="float-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Back to Top">↑</button>
 </div>
 
@@ -323,13 +322,10 @@
     // Scroll Logic for floating buttons
     window.onscroll = function() {
         const topBtn = document.getElementById("btn-top");
-        const latBtn = document.getElementById("btn-latest");
         if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
             topBtn.style.display = "flex";
-            latBtn.style.display = "flex";
         } else {
             topBtn.style.display = "none";
-            latBtn.style.display = "none";
         }
     };
 
