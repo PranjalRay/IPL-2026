@@ -414,7 +414,9 @@
         const text = input.value.trim();
         if(!text) return;
 
-        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        // CHANGED LINE: Now uses .toLocaleString to include the Date (Month/Day)
+        const time = new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        
         const newMsgKey = db.ref('ipl_battle_2026/chat').push().key;
         
         db.ref(`ipl_battle_2026/chat/${newMsgKey}`).set({
