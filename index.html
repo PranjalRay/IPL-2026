@@ -12,7 +12,7 @@
             --bg: #060b1a; --card: #111827; --gold: #f59e0b;
             --p1-color: #00f2ff; --p2-color: #ff007b;
         }
-        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: white; margin: 0; padding-bottom: 50px; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: white; margin: 0; padding-bottom: 80px; }
         
         .header { 
             position: sticky; top: 0; z-index: 100; background: rgba(17, 24, 39, 0.95);
@@ -51,6 +51,9 @@
         .p1-picked { border-color: var(--p1-color) !important; background: #002a2e !important; box-shadow: 0 0 10px var(--p1-color); }
         .p2-picked { border-color: var(--p2-color) !important; background: #2e001a !important; box-shadow: 0 0 10px var(--p2-color); }
         .result-btn { width: 100%; padding: 12px; background: var(--gold); border: none; border-radius: 6px; font-family: 'Oxanium'; font-weight: bold; cursor: pointer; }
+        
+        .footer-tools { text-align: center; margin-top: 20px; opacity: 0.3; font-size: 0.6rem; }
+        .footer-tools:hover { opacity: 1; }
     </style>
 </head>
 <body>
@@ -87,6 +90,10 @@
 </div>
 
 <div id="grid" class="container"></div>
+
+<div class="footer-tools">
+    <button onclick="resetData()" style="background:none; border:none; color:red; cursor:pointer;">RESET ALL SCORES & RESULTS</button>
+</div>
 
 <script>
     const firebaseConfig = {
@@ -220,11 +227,9 @@
         document.getElementById('p1-display').innerText = data.p1Score || 0;
         document.getElementById('p2-display').innerText = data.p2Score || 0;
 
-        // Detect Point Ties
         const ptsCount = {};
         Object.values(table).forEach(t => { if(t.pts > 0) ptsCount[t.pts] = (ptsCount[t.pts] || 0) + 1; });
 
-        // Sort by Points, then by NRR
         const sorted = Object.keys(table).sort((a,b) => (table[b].pts - table[a].pts) || (parseFloat(nrrData[b]||0) - parseFloat(nrrData[a]||0)));
 
         document.getElementById('points-body').innerHTML = sorted.map(t => {
@@ -280,19 +285,30 @@
     function resolveMatch(id, tA, tB) {
         const res = prompt(`Match ${id} Result:\nType "${tA}", "${tB}", or "RAIN"`);
         if (!res) return;
-        const norm = res.toUpperCase() === "RAIN" ? "RAIN" : res.trim();
+        const norm = res.trim();
+        
         db.ref('ipl_battle_2026').once('value', snap => {
             const d = snap.val() || {};
             const p = d.picks ? d.picks[id] : null;
-            const up = {}; up[`results/${id}`] = norm;
+            const up = {}; 
+            
+            up[`results/${id}`] = norm;
+
             if (norm !== "RAIN" && p) {
+                // Independent check for Son
                 if (p.p1 === norm) up[`p1Score`] = (d.p1Score || 0) + 1;
+                // Independent check for Father
                 if (p.p2 === norm) up[`p2Score`] = (d.p2Score || 0) + 1;
             }
             db.ref('ipl_battle_2026').update(up);
         });
     }
+
+    function resetData() {
+        if(confirm("Are you sure? This will wipe the scores and match results!")) {
+            db.ref('ipl_battle_2026').set({ p1Score: 0, p2Score: 0, results: {}, nrr: {} });
+        }
+    }
 </script>
 </body>
 </html>
- 
