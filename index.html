@@ -40,6 +40,12 @@
             100% { box-shadow: 0 0 5px #10b981; }
         }
 
+        @keyframes resetRedGlow {
+            0% { box-shadow: 0 0 5px #ef4444; }
+            50% { box-shadow: 0 0 20px #ef4444; }
+            100% { box-shadow: 0 0 5px #ef4444; }
+        }
+
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-4px); }
@@ -190,7 +196,7 @@
             letter-spacing: 1px;
             cursor: pointer;
             transition: 0.3s;
-            animation: nuclearGlow 2s infinite;
+            animation: resetRedGlow 2s infinite;
         }
         .nuclear-btn:hover {
             background: #ef4444;
