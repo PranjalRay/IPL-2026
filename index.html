@@ -58,15 +58,25 @@
         }
         .jump-btn:hover { transform: scale(1.05); box-shadow: 0 0 10px var(--gold); }
 
-        #emoji-modal {
+        .modal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(20px);
             padding: 20px; border-radius: 15px; border: 2px solid var(--gold);
             z-index: 2000; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.8);
         }
+        
+        #resolve-modal { width: 85%; max-width: 350px; border-color: var(--p1-color); }
+        
         .emoji-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
         .emoji-opt { font-size: 1.5rem; cursor: pointer; padding: 5px; transition: 0.2s; border-radius: 5px; }
         .emoji-opt:hover { background: rgba(255,255,255,0.1); transform: scale(1.2); }
+
+        .resolve-opt-btn {
+            width: 100%; padding: 12px; border: none; border-radius: 8px; font-family: 'Oxanium'; 
+            font-weight: bold; font-size: 1.1rem; cursor: pointer; color: white; transition: 0.3s;
+            margin-bottom: 10px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .resolve-opt-btn:hover { transform: scale(1.03); }
 
         .collapsible-stats { max-width: 1200px; margin: 15px auto; padding: 0 20px; }
         .collapsible-stats summary { 
@@ -107,7 +117,6 @@
         .result-btn { width: 100%; padding: 12px; background: var(--gold); border: none; border-radius: 6px; font-family: 'Oxanium'; font-weight: bold; cursor: pointer; color: #060b1a; }
         .result-btn:disabled { background: #1f2937; color: #4b5563; cursor: not-allowed; }
         
-        /* Floating Buttons Container */
         .float-actions { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
         .float-btn { 
             background: var(--gold); border: none; width: 50px; height: 50px; border-radius: 50%; 
@@ -120,7 +129,7 @@
 </head>
 <body>
 
-<div id="emoji-modal">
+<div id="emoji-modal" class="modal">
     <div class="label" id="picker-title">Select Avatar</div>
     <div class="emoji-grid">
         <span class="emoji-opt" onclick="setAvatar('👦')">👦</span>
@@ -135,6 +144,13 @@
         <span class="emoji-opt" onclick="setAvatar('🦁')">🦁</span>
     </div>
     <button onclick="closeEmojiPicker()" style="margin-top:15px; background:none; border:1px solid var(--gold); color:var(--gold); padding:5px 10px; border-radius:5px; cursor:pointer;">Close</button>
+</div>
+
+<div id="resolve-modal" class="modal">
+    <div class="label" style="font-size: 1rem; margin-bottom: 15px; color: var(--p1-color);">DECLARE WINNER</div>
+    <div id="resolve-options" style="display: flex; flex-direction: column;">
+        </div>
+    <button onclick="closeResolveModal()" style="margin-top:10px; background:none; border:1px solid #ef4444; color:#ef4444; padding:8px 15px; border-radius:5px; cursor:pointer; font-family:'Oxanium'; font-weight:bold; width: 100%;">CANCEL</button>
 </div>
 
 <div class="header">
@@ -221,7 +237,9 @@
     const db = firebase.database();
     const params = new URLSearchParams(window.location.search);
     const myId = params.get('user') || 'p1';
+    
     let activePickerId = 'p1';
+    let activeResolveMatch = null;
 
     const teamData = {
         "Kolkata Knight Riders": { abbr: "KKR", color: "#b886ee" },
@@ -344,6 +362,52 @@
         closeEmojiPicker();
     }
 
+    // Modal logic for resolving matches
+    function openResolveModal(id, tA, tB) {
+        activeResolveMatch = { id, tA, tB };
+        const modal = document.getElementById('resolve-modal');
+        const optionsDiv = document.getElementById('resolve-options');
+        
+        const dataA = teamData[tA];
+        const dataB = teamData[tB];
+
+        // Generate buttons dynamically based on the match teams
+        optionsDiv.innerHTML = `
+            <button class="resolve-opt-btn" style="background: ${dataA.color}88; border: 2px solid ${dataA.color}" onclick="submitResult('${tA}')">🏆 ${dataA.abbr} WINS</button>
+            <button class="resolve-opt-btn" style="background: ${dataB.color}88; border: 2px solid ${dataB.color}" onclick="submitResult('${tB}')">🏆 ${dataB.abbr} WINS</button>
+            <button class="resolve-opt-btn" style="background: #374151; border: 2px solid #6b7280" onclick="submitResult('RAIN')">🌧️ RAIN / NO RESULT</button>
+        `;
+        
+        modal.style.display = 'block';
+    }
+
+    function closeResolveModal() {
+        document.getElementById('resolve-modal').style.display = 'none';
+        activeResolveMatch = null;
+    }
+
+    function submitResult(resInput) {
+        if (!activeResolveMatch) return;
+        
+        const { id, tA, tB } = activeResolveMatch;
+        let res = resInput === 'RAIN' ? 'RAIN' : resInput;
+
+        db.ref('ipl_battle_2026').once('value', snap => {
+            const d = snap.val() || {};
+            const p = d.picks ? d.picks[id] : null;
+            const updates = {};
+            updates[`results/${id}`] = res;
+            
+            if (res !== "RAIN" && p) {
+                if (p.p1 === res) updates['p1Score'] = (d.p1Score || 0) + 1;
+                if (p.p2 === res) updates['p2Score'] = (d.p2Score || 0) + 1;
+            }
+            db.ref('ipl_battle_2026').update(updates);
+        });
+
+        closeResolveModal();
+    }
+
     function matchesQuery(teamName, query) {
         if (!query) return true;
         const q = query.toLowerCase();
@@ -454,7 +518,7 @@
                         <button class="team-btn ${pick.p1===m.h?'p1-picked':''} ${pick.p2===m.h?'p2-picked':''}" onclick="makePick(${m.id},'${m.h}','${m.a}')">${hData.abbr}</button>
                         <button class="team-btn ${pick.p1===m.a?'p1-picked':''} ${pick.p2===m.a?'p2-picked':''}" onclick="makePick(${m.id},'${m.a}','${m.h}')">${aData.abbr}</button>
                     </div>
-                    <button class="result-btn" ${win ? 'disabled' : ''} onclick="resolve(${m.id},'${m.h}','${m.a}')">
+                    <button class="result-btn" ${win ? 'disabled' : ''} onclick="openResolveModal(${m.id},'${m.h}','${m.a}')">
                         ${win ? (win === 'RAIN' ? 'RAIN/NO RESULT' : 'WINNER: ' + teamData[win].abbr) : 'DECLARE WINNER'}
                     </button>
                 </div>
@@ -468,29 +532,6 @@
         updates[`picks/${id}/${myId}`] = sel;
         updates[`picks/${id}/${otherId}`] = oth;
         db.ref('ipl_battle_2026').update(updates);
-    }
-
-    function resolve(id, tA, tB) {
-        const resInput = prompt(`Enter Winner: "${teamData[tA].abbr}", "${teamData[tB].abbr}", or "RAIN"`).toUpperCase();
-        if (!resInput) return;
-        
-        let res = resInput === 'RAIN' ? 'RAIN' : null;
-        if (resInput === teamData[tA].abbr) res = tA;
-        if (resInput === teamData[tB].abbr) res = tB;
-
-        if (!res) { alert("Invalid Winner Abbreviation!"); return; }
-
-        db.ref('ipl_battle_2026').once('value', snap => {
-            const d = snap.val() || {};
-            const p = d.picks ? d.picks[id] : null;
-            const updates = {};
-            updates[`results/${id}`] = res;
-            if (res !== "RAIN" && p) {
-                if (p.p1 === res) updates['p1Score'] = (d.p1Score || 0) + 1;
-                if (p.p2 === res) updates['p2Score'] = (d.p2Score || 0) + 1;
-            }
-            db.ref('ipl_battle_2026').update(updates);
-        });
     }
 
     function resetData() {
