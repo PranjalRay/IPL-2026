@@ -26,7 +26,7 @@
         #p2-display { color: var(--p2-color); }
         .label { font-size: 0.7rem; letter-spacing: 2px; color: var(--gold); font-weight: 700; text-transform: uppercase; }
 
-        /* Statistics Collapsible */
+        /* Collapsibles */
         .collapsible-stats { max-width: 1200px; margin: 15px auto; padding: 0 20px; }
         .collapsible-stats summary { 
             cursor: pointer; background: #1f2937; padding: 12px; border-radius: 8px; 
@@ -48,18 +48,20 @@
         .form-NR { background: #6b7280; }
         .form-empty { border: 1px dashed #4b5563; color: #4b5563; }
 
-        /* Points Table (Separate Section) */
-        .points-table-container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
-        table { width: 100%; border-collapse: collapse; font-family: 'Oxanium'; font-size: 0.85rem; background: #111827; border-radius: 8px; overflow: hidden; }
+        /* Points Table */
+        table { width: 100%; border-collapse: collapse; font-family: 'Oxanium'; font-size: 0.85rem; background: #111827; }
         th { border-bottom: 2px solid #374151; padding: 12px; color: var(--gold); text-align: left; background: #1f2937; }
         td { padding: 12px; border-bottom: 1px solid #1f2937; }
-        
         .nrr-btn { background: #374151; color: var(--p1-color); border: none; border-radius: 4px; padding: 2px 5px; cursor: pointer; font-size: 0.6rem; margin-left: 5px; font-family: 'Oxanium'; }
 
         /* Match Cards Grid */
         .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto; }
         .match-card { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid #1f2937; transition: 0.3s; }
-        .match-card.finished { border-color: #10b981; background: #0c121d; }
+        
+        /* Win/Loss Card Colors */
+        .match-card.finished-win { border-color: #10b981; background: rgba(16, 185, 129, 0.08); }
+        .match-card.finished-loss { border-color: #ef4444; background: rgba(239, 68, 68, 0.08); }
+        .match-card.finished-rain { border-color: #6b7280; background: rgba(107, 114, 128, 0.08); }
 
         .team-row { display: flex; gap: 10px; margin: 15px 0; }
         .team-btn { 
@@ -103,21 +105,29 @@
         </div>
         <div style="text-align: center; border: 1px solid #374151; padding: 15px; border-radius: 8px;">
             <div class="label">TEAM FORM (LAST 5)</div>
-            <div style="display:flex; justify-content: space-around; margin-top: 10px;">
-                <div><div style="font-size: 0.6rem; color:#ff822a; font-weight:bold;">SRH</div><div id="srh-form" class="form-row"></div></div>
-                <div><div style="font-size: 0.6rem; color:#3a225d; font-weight:bold;">KKR</div><div id="kkr-form" class="form-row"></div></div>
+            <div style="display:flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                <div>
+                    <div style="font-size: 0.7rem; color:#ff822a; font-weight:bold;">SRH</div>
+                    <div id="srh-form" class="form-row" style="margin-top: 5px;"></div>
+                </div>
+                <div>
+                    <div style="font-size: 0.7rem; color:#b886ee; font-weight:bold;">KKR</div>
+                    <div id="kkr-form" class="form-row" style="margin-top: 5px;"></div>
+                </div>
             </div>
         </div>
     </div>
 </details>
 
-<div class="points-table-container">
-    <div class="label" style="margin-bottom: 10px;">SEASON POINTS TABLE</div>
-    <table>
-        <thead><tr><th>TEAM</th><th>P</th><th>W</th><th>L</th><th>PTS</th><th>NRR</th></tr></thead>
-        <tbody id="points-body"></tbody>
-    </table>
-</div>
+<details class="collapsible-stats">
+    <summary>🏆 SEASON POINTS TABLE</summary>
+    <div style="margin-top: 10px; border: 1px solid #374151; border-radius: 8px; overflow: hidden;">
+        <table>
+            <thead><tr><th>TEAM</th><th>P</th><th>W</th><th>L</th><th>PTS</th><th>NRR</th></tr></thead>
+            <tbody id="points-body"></tbody>
+        </table>
+    </div>
+</details>
 
 <div id="grid" class="container"></div>
 
@@ -144,12 +154,18 @@
     const myId = params.get('user') || 'p1';
     const otherId = myId === 'p1' ? 'p2' : 'p1';
 
+    // UPDATED BRIGHTER COLORS FOR DC, GT, KKR
     const teamColors = {
-        "Royal Challengers Bengaluru": "#ec1c24", "Mumbai Indians": "#004ba0", 
-        "Chennai Super Kings": "#ffff00", "Kolkata Knight Riders": "#3a225d",
-        "Sunrisers Hyderabad": "#ff822a", "Rajasthan Royals": "#ea1a85",
-        "Gujarat Titans": "#1b2133", "Delhi Capitals": "#00008b",
-        "Lucknow Super Giants": "#a3ceee", "Punjab Kings": "#ed1b24"
+        "Royal Challengers Bengaluru": "#ec1c24", 
+        "Mumbai Indians": "#004ba0", 
+        "Chennai Super Kings": "#ffff00", 
+        "Kolkata Knight Riders": "#b886ee", /* Bright Neon Purple */
+        "Sunrisers Hyderabad": "#ff822a", 
+        "Rajasthan Royals": "#ea1a85",
+        "Gujarat Titans": "#5da1e3", /* Bright Sky Blue */
+        "Delhi Capitals": "#4a90e2", /* Bright Royal Blue */
+        "Lucknow Super Giants": "#a3ceee", 
+        "Punjab Kings": "#ed1b24"
     };
 
     const matches = [
@@ -283,7 +299,6 @@
         document.getElementById('srh-form').innerHTML = genCircles(srhH);
         document.getElementById('kkr-form').innerHTML = genCircles(kkrH);
 
-        // Sorting by Points first, then by NRR to break ties
         const sorted = Object.keys(table).sort((a,b) => (table[b].pts - table[a].pts) || (parseFloat(nrrData[b]||0) - parseFloat(nrrData[a]||0)));
         
         document.getElementById('points-body').innerHTML = sorted.map(t => `
@@ -300,8 +315,21 @@
         document.getElementById('grid').innerHTML = matches.map(m => {
             const pick = picks[m.id] || {};
             const win = results[m.id];
+            
+            // LOGIC FOR WIN/LOSS CARD COLORS
+            let cardStateClass = '';
+            if (win) {
+                if (pick[myId] === win) {
+                    cardStateClass = 'finished-win';
+                } else if (win === 'RAIN') {
+                    cardStateClass = 'finished-rain';
+                } else {
+                    cardStateClass = 'finished-loss';
+                }
+            }
+
             return `
-                <div class="match-card ${win ? 'finished' : ''}">
+                <div class="match-card ${cardStateClass}">
                     <div class="label" style="font-size:0.6rem; color:#9ca3af">Match ${m.id} • ${m.date}</div>
                     <div class="team-row">
                         <button class="team-btn ${pick.p1===m.h?'p1-picked':''} ${pick.p2===m.h?'p2-picked':''}" onclick="makePick(${m.id},'${m.h}','${m.a}')">${m.h.split(' ').pop()}</button>
@@ -338,7 +366,6 @@
             const updates = {};
             updates[`results/${id}`] = norm;
             
-            // Independent check for Son and Father scoring
             if (norm !== "RAIN" && p) {
                 if (p.p1 === norm) updates['p1Score'] = (d.p1Score || 0) + 1;
                 if (p.p2 === norm) updates['p2Score'] = (d.p2Score || 0) + 1;
