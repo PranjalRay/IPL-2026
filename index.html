@@ -15,165 +15,83 @@
                           linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
         }
         
-        /* [UI 7: Cyber Grid] */
         body { 
-            font-family: 'Outfit', sans-serif; 
-            background: var(--bg); 
-            background-image: var(--cyber-grid);
-            background-size: 50px 50px;
-            color: white; 
-            margin: 0; 
-            padding-bottom: 120px; /* Space for FAB */
-            scroll-behavior: smooth; 
+            font-family: 'Outfit', sans-serif; background: var(--bg); 
+            background-image: var(--cyber-grid); background-size: 50px 50px;
+            color: white; margin: 0; padding-bottom: 120px; scroll-behavior: smooth; 
         }
         
-        /* [UI 1: Dynamic Theme Header] */
         .header { 
-            position: sticky; top: 0; z-index: 1000; 
-            background: rgba(17, 24, 39, 0.85); /* Glass base */
-            padding: 15px; 
-            border-bottom: 2px solid var(--gold); 
-            box-shadow: 0 4px 30px rgba(245, 158, 11, 0.3); /* Base gold glow */
+            position: sticky; top: 0; z-index: 1000; background: rgba(17, 24, 39, 0.85);
+            padding: 15px; border-bottom: 2px solid var(--gold); 
             display: flex; justify-content: space-around; align-items: center; 
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            transition: box-shadow 0.3s ease;
         }
 
-        /* [UI 2: Floating score animation] */
-        .score-val { 
-            font-family: 'Oxanium'; font-size: 2.8rem; font-weight: 700; 
-            line-height: 1; 
-            transition: text-shadow 0.3s ease;
-        }
-        #p1-display { 
-            color: var(--p1-color); 
-            text-shadow: 0 0 10px rgba(0,242,255,0.3); 
-        } 
-        #p2-display { 
-            color: var(--p2-color); 
-            text-shadow: 0 0 10px rgba(255,0,123,0.3); 
-        }
+        .score-val { font-family: 'Oxanium'; font-size: 2.8rem; font-weight: 700; line-height: 1; }
+        #p1-display { color: var(--p1-color); text-shadow: 0 0 10px rgba(0,242,255,0.3); } 
+        #p2-display { color: var(--p2-color); text-shadow: 0 0 10px rgba(255,0,123,0.3); }
         .label { font-size: 0.7rem; letter-spacing: 2px; color: var(--gold); font-weight: 700; text-transform: uppercase; }
 
-        /* [UI 2: Glassmorphism Table] */
-        details { max-width: 1200px; margin: 15px auto; padding: 0 20px; }
-        summary { 
-            cursor: pointer; font-family: 'Oxanium'; 
-            background: rgba(31, 41, 55, 0.7); /* Translucent */
-            padding: 12px; border-radius: 8px; 
-            border: 1px solid var(--gold); 
-            list-style: none; text-align: center; font-weight: bold; 
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
+        /* Master Statistics Collapsible */
+        .stats-details { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        .stats-summary { 
+            cursor: pointer; font-family: 'Oxanium'; background: rgba(31, 41, 55, 0.8);
+            padding: 15px; border-radius: 12px; border: 1px solid var(--gold); 
+            list-style: none; text-align: center; font-weight: bold; font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: 0.3s;
         }
-        summary:hover { box-shadow: 0 0 15px var(--gold); }
-        
-        table { 
-            width: 100%; border-collapse: collapse; margin-top: 10px; 
-            font-family: 'Oxanium'; font-size: 0.75rem; 
-            background: rgba(17, 24, 39, 0.6); /* Translucent */
-            border-radius: 8px; overflow: hidden; 
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.05);
+        .stats-summary:hover { box-shadow: 0 0 20px var(--gold); transform: scale(1.01); }
+
+        .stats-content { 
+            background: rgba(17, 24, 39, 0.8); border-radius: 0 0 12px 12px; 
+            padding: 20px; margin-top: -5px; border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
         }
+
+        /* Fav Teams Row inside Stats */
+        .fav-teams-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .fav-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; text-align: center; border-left: 4px solid var(--gold); }
+
+        table { width: 100%; border-collapse: collapse; font-family: 'Oxanium'; font-size: 0.75rem; color: #e5e7eb; }
         th { border-bottom: 2px solid rgba(255,255,255,0.1); padding: 12px; color: var(--gold); text-align: left; }
-        td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+        td { padding: 12px 8px; border-bottom: 1px solid rgba(255,255,255,0.03); }
 
-        .nrr-btn { background: #374151; color: var(--p1-color); border: none; border-radius: 4px; padding: 2px 5px; cursor: pointer; font-size: 0.6rem; margin-left: 5px; font-family: 'Oxanium'; }
-
-        /* [UI 2/3: Glass History Area] */
-        .stats-area { max-width: 1200px; margin: 10px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px; }
-        .player-stats { 
-            background: rgba(255,255,255,0.03); /* Frosted */
-            padding: 12px; border-radius: 8px; text-align: center; 
-            border: 1px solid rgba(255,255,255,0.05);
-            min-height: 60px;
-            backdrop-filter: blur(5px);
-            transition: transform 0.2s ease;
-        }
-        .player-stats:hover { transform: translateY(-3px); }
-        .form-guide { display: flex; gap: 6px; justify-content: center; margin-top: 10px; }
+        /* Form Guide Circles */
+        .form-guide { display: flex; gap: 4px; }
         .form-circle { 
-            width: 14px; height: 14px; border-radius: 50%; 
-            background: #374151; display: flex; align-items: center; justify-content: center; 
-            font-size: 8px; font-weight: bold; 
-            transition: box-shadow 0.3s ease;
+            width: 16px; height: 16px; border-radius: 50%; background: #374151; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 9px; font-weight: bold; color: white;
         }
-        .form-W { background: #10b981; box-shadow: 0 0 12px #10b981; }
+        .form-W { background: #10b981; box-shadow: 0 0 8px #10b981; }
         .form-L { background: #ef4444; }
         .form-NR { background: #6b7280; }
 
-        /* [UI 2: Glass Match Grid] */
         .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto; }
         .match-card { 
-            background: rgba(17, 24, 39, 0.6); /* Translucent */
-            border-radius: 12px; padding: 20px; 
-            border: 1px solid rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            position: relative; overflow: hidden;
+            background: rgba(17, 24, 39, 0.7); border-radius: 12px; padding: 20px; 
+            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
+            transition: 0.3s; position: relative;
         }
-        .match-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .match-card::before { content: ''; position: absolute; top:0; left:0; width: 100%; height: 3px; } /* Team border placeholder */
-        
-        /* [UI 3: Finished Card celebration] */
-        .match-card.finished { 
-            border-color: #10b981 !important; 
-            opacity: 0.9; 
-            animation: cardCelebrate 1s ease;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
-        }
-        @keyframes cardCelebrate { 0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); } 50% { box-shadow: 0 0 40px #10b981; } }
+        .match-card:hover { transform: translateY(-5px); }
+        .match-card.finished { border-color: #10b981 !important; box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
 
-        .date { font-size: 0.7rem; color: #9ca3af; margin-bottom: 10px; font-weight: 300; }
-        .vs-container { display: flex; align-items: center; justify-content: space-between; margin: 15px 0; }
-        
-        /* [UI 5: Interactive Haptic Button] */
         .team-btn { 
-            flex: 1; padding: 12px 5px; 
-            border: 2px solid #374151; border-radius: 8px; 
-            background: #1f2937; color: white; cursor: pointer; 
-            font-family: 'Oxanium'; font-size: 0.75rem;
-            transition: all 0.2s ease;
-            position: relative; overflow: hidden;
+            flex: 1; padding: 12px 5px; border: 2px solid #374151; border-radius: 8px; 
+            background: #1f2937; color: white; cursor: pointer; font-family: 'Oxanium'; font-size: 0.75rem; transition: 0.2s;
         }
-        .team-btn:active { transform: scale(0.97); } /* [UI 5: Haptic Press] */
+        .p1-picked { border-color: var(--p1-color) !important; background: #002a2e !important; box-shadow: 0 0 10px var(--p1-color); }
+        .p2-picked { border-color: var(--p2-color) !important; background: #2e001a !important; box-shadow: 0 0 10px var(--p2-color); }
 
-        .p1-picked { 
-            border-color: var(--p1-color) !important; background: #002a2e !important; 
-            box-shadow: 0 0 15px var(--p1-color);
-            animation: pulseP1 2s infinite; 
-        }
-        .p2-picked { 
-            border-color: var(--p2-color) !important; background: #2e001a !important; 
-            box-shadow: 0 0 15px var(--p2-color);
-            animation: pulseP2 2s infinite; 
-        }
-        @keyframes pulseP1 { 0%, 100% { box-shadow: 0 0 10px var(--p1-color); } 50% { box-shadow: 0 0 20px var(--p1-color); } }
-        @keyframes pulseP2 { 0%, 100% { box-shadow: 0 0 10px var(--p2-color); } 50% { box-shadow: 0 0 20px var(--p2-color); } }
-
-        .result-btn { width: 100%; padding: 12px; background: var(--gold); border: none; border-radius: 6px; font-family: 'Oxanium'; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .result-btn:hover:not(:disabled) { box-shadow: 0 0 20px var(--gold); }
-        .result-btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; opacity: 0.7; }
-
-        /* [UI 4: Floating Action Button] */
         .fab {
-            position: fixed; bottom: 25px; right: 25px;
-            width: 60px; height: 60px;
-            background: var(--gold); color: #060b1a;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; font-weight: bold;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            cursor: pointer; z-index: 1000;
-            transition: all 0.3s ease;
-            text-decoration: none; border: none;
-            font-family: 'Oxanium';
+            position: fixed; bottom: 25px; right: 25px; width: 55px; height: 55px;
+            background: var(--gold); color: #060b1a; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: bold;
+            cursor: pointer; z-index: 1000; border: none; font-family: 'Oxanium';
         }
-        .fab:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 15px 40px rgba(245, 158, 11, 0.5); }
         
-        .footer-tools { text-align: center; margin-top: 60px; opacity: 0.4; font-size: 0.7rem; font-weight: 300; color: #9ca3af; }
+        .footer-tools { text-align: center; margin-top: 60px; opacity: 0.3; font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -183,39 +101,48 @@
         <div class="label">SON</div>
         <div id="p1-display" class="score-val">0</div>
     </div>
-    <div style="text-align:center"><img src="https://pngimg.com/uploads/cricket/cricket_PNG23.png" width="40"><div class="label" style="font-size:0.5rem">BATTLE</div></div>
+    <div style="text-align:center"><img src="https://pngimg.com/uploads/cricket/cricket_PNG23.png" width="40"></div>
     <div class="score-box">
         <div class="label">FATHER</div>
         <div id="p2-display" class="score-val">0</div>
     </div>
 </div>
 
-<details>
-    <summary>📊 VIEW IPL 2026 POINTS TABLE</summary>
-    <table>
-        <thead><tr><th>TEAM</th><th>P</th><th>W</th><th>L</th><th>PTS</th><th>WIN %</th><th>NRR</th></tr></thead>
-        <tbody id="points-body"></tbody>
-    </table>
-</details>
+<details class="stats-details">
+    <summary class="stats-summary">📊 VIEW SEASON STATISTICS</summary>
+    <div class="stats-content">
+        <div class="fav-teams-row">
+            <div class="fav-card" style="border-color: #ff822a;">
+                <div class="label" style="color:#ff822a">SRH (SON)</div>
+                <div id="srh-history" class="form-guide" style="justify-content:center; margin-top:10px;"></div>
+            </div>
+            <div class="fav-card" style="border-color: #3a225d;">
+                <div class="label" style="color:#3a225d">KKR (DAD)</div>
+                <div id="kkr-history" class="form-guide" style="justify-content:center; margin-top:10px;"></div>
+            </div>
+        </div>
 
-<div class="stats-area">
-    <div class="player-stats" style="border-top: 3px solid #ff822a;">
-        <div class="label">SRH LAST 5</div>
-        <div id="srh-history" class="form-guide"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>TEAM</th>
+                    <th>P</th>
+                    <th>PTS</th>
+                    <th>WIN %</th>
+                    <th>FORM (LAST 5)</th>
+                </tr>
+            </thead>
+            <tbody id="points-body"></tbody>
+        </table>
     </div>
-    <div class="player-stats" style="border-top: 3px solid #3a225d;">
-        <div class="label">KKR LAST 5</div>
-        <div id="kkr-history" class="form-guide"></div>
-    </div>
-</div>
+</details>
 
 <div id="grid" class="container"></div>
 
-<button class="fab" onclick="window.scrollTo(0,0)" title="Back to Top">↑</button>
+<button class="fab" onclick="window.scrollTo(0,0)">TOP</button>
 
 <div class="footer-tools">
-    Tracker by Gemini • All Rights Reserved<br>
-    <button onclick="resetData()" style="background:none; border:none; color:red; cursor:pointer; text-decoration: underline; font-size: 0.6rem; margin-top: 10px;">RESET BATTLE</button>
+    <button onclick="resetData()" style="background:none; border:none; color:red; cursor:pointer;">Reset Battle Data</button>
 </div>
 
 <script>
@@ -323,11 +250,13 @@
     function render(data) {
         const results = data.results || {};
         const picks = data.picks || {};
-        const nrrData = data.nrr || {};
-
+        
         let table = {};
-        let srhH = [], kkrH = [];
-        Object.keys(teamColors).forEach(t => table[t] = { p: 0, w: 0, l: 0, pts: 0 });
+        let histories = {};
+        Object.keys(teamColors).forEach(t => {
+            table[t] = { p: 0, w: 0, l: 0, pts: 0 };
+            histories[t] = [];
+        });
 
         matches.forEach(m => {
             const res = results[m.id];
@@ -335,49 +264,41 @@
             table[m.h].p++; table[m.a].p++;
             if (res === "RAIN") {
                 table[m.h].pts++; table[m.a].pts++;
-                if(m.h.includes("Hyderabad") || m.a.includes("Hyderabad")) srhH.push('NR');
-                if(m.h.includes("Kolkata") || m.a.includes("Kolkata")) kkrH.push('NR');
+                histories[m.h].push('NR'); histories[m.a].push('NR');
             } else {
                 table[res].w++; table[res].pts += 2;
                 const loser = (res === m.h) ? m.a : m.h;
                 table[loser].l++;
-                if(m.h.includes("Hyderabad") || m.a.includes("Hyderabad")) srhH.push(res.includes("Hyderabad") ? 'W' : 'L');
-                if(m.h.includes("Kolkata") || m.a.includes("Kolkata")) kkrH.push(res.includes("Kolkata") ? 'W' : 'L');
+                histories[res].push('W'); histories[loser].push('L');
             }
         });
-
-        // Dynamic Header Glow logic (based on last match vs today)
-        const lastResultMatch = matches.slice().reverse().find(m => results[m.id]);
-        if(lastResultMatch) {
-            const hColor = teamColors[lastResultMatch.h];
-            const aColor = teamColors[lastResultMatch.a];
-            document.getElementById('main-header').style.boxShadow = `0 4px 30px ${hColor}44, 0 4px 30px ${aColor}44`;
-        }
 
         document.getElementById('p1-display').innerText = data.p1Score || 0;
         document.getElementById('p2-display').innerText = data.p2Score || 0;
 
-        const sorted = Object.keys(table).sort((a,b) => (table[b].pts - table[a].pts) || (parseFloat(nrrData[b]||0) - parseFloat(nrrData[a]||0)));
+        const sorted = Object.keys(table).sort((a,b) => table[b].pts - table[a].pts);
 
         document.getElementById('points-body').innerHTML = sorted.map(t => {
             const winPct = table[t].p > 0 ? ((table[t].w / table[t].p) * 100).toFixed(1) : "0.0";
+            const form = histories[t].slice(-5).map(r => `<div class="form-circle form-${r}">${r[0]}</div>`).join('');
             return `
                 <tr>
-                    <td style="color:${teamColors[t]}; font-weight:bold;">${t.split(' ').pop()} <button class="nrr-btn" onclick="updateNRR('${t}')">✎</button></td>
-                    <td>${table[t].p}</td><td>${table[t].w}</td><td>${table[t].l}</td>
-                    <td style="color:var(--gold); font-weight:bold; font-size:0.85rem">${table[t].pts}</td>
+                    <td style="color:${teamColors[t]}; font-weight:bold;">${t.split(' ').pop()}</td>
+                    <td>${table[t].p}</td>
+                    <td style="color:var(--gold); font-weight:bold;">${table[t].pts}</td>
                     <td>${winPct}%</td>
-                    <td style="color:var(--p1-color); font-size:0.6rem;">${nrrData[t] || '0.000'}</td>
+                    <td><div class="form-guide">${form}</div></td>
                 </tr>
             `}).join('');
 
-        const histUI = (id, list) => {
+        const updateFav = (id, teamName) => {
+            const list = histories[teamName] || [];
             const last5 = list.slice(-5);
-            // Pad with empty circles if fewer than 5 matches played
             while(last5.length < 5) last5.unshift('Pending');
             document.getElementById(id).innerHTML = last5.map(r => `<div class="form-circle form-${r}">${r==='Pending'?'?':r[0]}</div>`).join('');
         };
-        histUI('srh-history', srhH); histUI('kkr-history', kkrH);
+        updateFav('srh-history', 'Sunrisers Hyderabad');
+        updateFav('kkr-history', 'Kolkata Knight Riders');
 
         const grid = document.getElementById('grid');
         grid.innerHTML = matches.map(m => {
@@ -388,7 +309,7 @@
                     <div class="date">MATCH ${m.id} • ${m.date}</div>
                     <div class="vs-container">
                         <button class="team-btn ${pick.p1===m.h?'p1-picked':''} ${pick.p2===m.h?'p2-picked':''}" onclick="makePick(${m.id},'${m.h}','${m.a}')">${m.h}</button>
-                        <span style="font-weight:bold; color:#4b5563; font-size:0.7rem; padding: 0 10px;">VS</span>
+                        <span style="font-weight:bold; color:#4b5563; font-size:0.7rem; padding: 0 5px;">VS</span>
                         <button class="team-btn ${pick.p1===m.a?'p1-picked':''} ${pick.p2===m.a?'p2-picked':''}" onclick="makePick(${m.id},'${m.a}','${m.h}')">${m.a}</button>
                     </div>
                     <button class="result-btn" ${win ? 'disabled' : ''} onclick="resolveMatch(${m.id}, '${m.h}', '${m.a}')">
@@ -397,12 +318,6 @@
                 </div>
             `;
         }).join('');
-    }
-
-    function updateNRR(teamName) {
-        const val = prompt(`Enter NRR for ${teamName}:`, "0.000");
-        if (val === null) return;
-        db.ref('ipl_battle_2026/nrr').update({ [teamName]: parseFloat(val).toFixed(3) });
     }
 
     function makePick(id, sel, oth) {
@@ -428,7 +343,7 @@
     }
 
     function resetData() {
-        if(confirm("This will wipe all scores and results. Start the new battle?")) {
+        if(confirm("Wipe all season data?")) {
             db.ref('ipl_battle_2026').set({ p1Score: 0, p2Score: 0, results: {}, nrr: {} });
         }
     }
