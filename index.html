@@ -15,14 +15,12 @@
             --p1-color: #00f2ff; 
             --p2-color: #ff007b;
             --success: #10b981;
+            --error: #ef4444;
         }
         
         body { 
             font-family: 'Outfit', sans-serif; 
             background-color: var(--bg);
-            background-image: 
-                linear-gradient(rgba(18, 113, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(18, 113, 255, 0.05) 1px, transparent 1px);
             background-size: 50px 50px;
             color: white; 
             margin: 0; 
@@ -30,7 +28,6 @@
             overflow-x: hidden;
         }
 
-        /* --- NEW ANIMATIONS --- */
         @keyframes neonPulse {
             0% { box-shadow: 0 0 5px var(--glow-color); }
             50% { box-shadow: 0 0 20px var(--glow-color); }
@@ -60,7 +57,6 @@
             animation: slideUp 0.3s ease-out;
         }
 
-        /* --- EXISTING STYLES --- */
         .header { 
             position: sticky; top: 0; z-index: 1000; 
             background: rgba(17, 24, 39, 0.85);
@@ -82,14 +78,12 @@
             width: 80%; max-width: 240px; padding: 8px 15px; border-radius: 20px; border: 1px solid #374151;
             background: var(--card); color: white; font-family: 'Outfit'; outline: none; font-size: 0.85rem;
         }
-        #team-search:focus { border-color: var(--p1-color); box-shadow: 0 0 10px var(--p1-color); }
 
         .jump-btn {
             background: var(--gold); border: none; padding: 8px 15px; border-radius: 20px;
             font-family: 'Oxanium'; font-weight: bold; font-size: 0.75rem; cursor: pointer;
             color: #060b1a; transition: 0.3s;
         }
-        .jump-btn:hover { transform: scale(1.05); box-shadow: 0 0 10px var(--gold); }
 
         .modal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -98,18 +92,21 @@
             z-index: 2000; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.8);
         }
         
-        #resolve-modal { width: 85%; max-width: 350px; border-color: var(--p1-color); }
+        #resolve-modal, #confirm-modal, #nrr-modal { width: 85%; max-width: 350px; }
         
         .emoji-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
         .emoji-opt { font-size: 1.5rem; cursor: pointer; padding: 5px; transition: 0.2s; border-radius: 5px; }
-        .emoji-opt:hover { background: rgba(255,255,255,0.1); transform: scale(1.2); }
 
-        .resolve-opt-btn {
+        .resolve-opt-btn, .modal-btn {
             width: 100%; padding: 12px; border: none; border-radius: 8px; font-family: 'Oxanium'; 
             font-weight: bold; font-size: 1.1rem; cursor: pointer; color: white; transition: 0.3s;
             margin-bottom: 10px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
-        .resolve-opt-btn:hover { transform: scale(1.03); }
+        
+        .modal-input {
+            width: 100%; padding: 10px; background: #1f2937; border: 1px solid var(--gold);
+            border-radius: 8px; color: white; margin-bottom: 15px; text-align: center; font-family: 'Oxanium'; font-size: 1.2rem;
+        }
 
         .collapsible-stats { max-width: 1200px; margin: 15px auto; padding: 0 20px; }
         .collapsible-stats summary { 
@@ -123,8 +120,8 @@
         
         .form-row { display: flex; gap: 5px; justify-content: center; margin-top: 10px; }
         .form-circle { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white; border: 1px solid rgba(255,255,255,0.1); }
-        .form-W { background: #10b981; box-shadow: 0 0 5px #10b981; } 
-        .form-L { background: #ef4444; box-shadow: 0 0 5px #ef4444; } 
+        .form-W { background: #10b981; } 
+        .form-L { background: #ef4444; } 
         .form-NR { background: #6b7280; }
         .form-empty { border: 1px dashed #4b5563; color: #4b5563; }
 
@@ -137,7 +134,6 @@
             background: var(--card); border-radius: 12px; padding: 20px; 
             border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(8px);
             transition: 0.4s; position: relative;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3), 0 0 10px var(--team-glow, transparent);
         }
         .match-card.finished-win { border-color: #10b981; background: rgba(16, 185, 129, 0.15); }
         .match-card.finished-loss { border-color: #ef4444; background: rgba(239, 68, 68, 0.15); }
@@ -151,11 +147,7 @@
         .result-btn:disabled { background: #1f2937; color: #4b5563; cursor: not-allowed; opacity: 0.5; }
         
         .float-actions { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
-        .float-btn { 
-            background: var(--gold); border: none; width: 50px; height: 50px; border-radius: 50%; 
-            font-size: 20px; cursor: pointer; display: none; box-shadow: 0 0 15px var(--gold); 
-            align-items: center; justify-content: center; color: #060b1a; font-weight: bold;
-        }
+        .float-btn { background: var(--gold); border: none; width: 50px; height: 50px; border-radius: 50%; display: none; align-items: center; justify-content: center; color: #060b1a; font-weight: bold; }
 
         #chat-container {
             position: fixed; bottom: 20px; left: 20px; width: 280px; z-index: 1001;
@@ -167,18 +159,13 @@
             background: var(--gold); color: #060b1a; padding: 8px 12px; font-weight: bold;
             font-family: 'Oxanium'; display: flex; justify-content: space-between; cursor: pointer;
         }
-        #chat-messages {
-            height: 250px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px;
-        }
+        #chat-messages { height: 250px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
         .chat-msg { font-size: 0.8rem; padding: 6px 10px; border-radius: 8px; max-width: 85%; line-height: 1.3; }
         .msg-time { font-size: 0.6rem; opacity: 0.6; display: block; margin-top: 3px; }
         .msg-p1 { align-self: flex-start; background: rgba(0, 242, 255, 0.15); border-left: 3px solid var(--p1-color); }
         .msg-p2 { align-self: flex-end; background: rgba(255, 0, 123, 0.15); border-right: 3px solid var(--p2-color); text-align: right; }
         #chat-input-area { display: flex; padding: 8px; border-top: 1px solid #374151; gap: 5px; }
-        #chat-input {
-            flex: 1; background: #1f2937; border: 1px solid #374151; border-radius: 4px;
-            color: white; padding: 5px; font-size: 0.8rem; outline: none;
-        }
+        #chat-input { flex: 1; background: #1f2937; border: 1px solid #374151; border-radius: 4px; color: white; padding: 5px; font-size: 0.8rem; outline: none; }
         #chat-send { background: var(--gold); border: none; border-radius: 4px; padding: 0 10px; cursor: pointer; font-weight: bold; }
         .minimized #chat-messages, .minimized #chat-input-area { display: none; }
         .minimized { width: 120px !important; }
@@ -212,6 +199,22 @@
     <p style="font-size: 0.8rem; margin-bottom: 15px; opacity: 0.7;">Declaring a winner updates the scores permanently.</p>
     <div id="resolve-options" style="display: flex; flex-direction: column;"></div>
     <button onclick="closeResolveModal()" style="margin-top:10px; background:none; border:1px solid #ef4444; color:#ef4444; padding:8px 15px; border-radius:5px; cursor:pointer; font-family:'Oxanium'; font-weight:bold; width: 100%;">CANCEL</button>
+</div>
+
+<div id="confirm-modal" class="modal">
+    <div class="label" style="font-size: 1rem; margin-bottom: 5px; color: var(--gold);">🕒 DEADLINE PASSED!</div>
+    <p style="font-size: 0.85rem; margin-bottom: 20px; opacity: 0.9; line-height: 1.4;">Did you and Dad already agree on this pick before the match started? <br><br><strong>(Honor System)</strong></p>
+    <button class="modal-btn" style="background: var(--success);" id="confirm-yes">YES, WE AGREED</button>
+    <button class="modal-btn" style="background: #374151;" onclick="closeConfirmModal()">NO, MY BAD</button>
+</div>
+
+<div id="nrr-modal" class="modal">
+    <div class="label" id="nrr-title" style="font-size: 1rem; margin-bottom: 10px;">UPDATE NRR</div>
+    <input type="number" step="0.001" id="nrr-input" class="modal-input" placeholder="0.000">
+    <div style="display: flex; gap: 10px;">
+        <button class="modal-btn" style="background: var(--success);" id="nrr-save">SAVE</button>
+        <button class="modal-btn" style="background: #374151;" onclick="closeNRRModal()">CANCEL</button>
+    </div>
 </div>
 
 <div id="chat-container" class="minimized">
@@ -313,6 +316,7 @@
     
     let activePickerId = 'p1';
     let activeResolveMatch = null;
+    let currentNRRTeam = null;
 
     const teamData = {
         "Kolkata Knight Riders": { abbr: "KKR", color: "#b886ee" },
@@ -326,6 +330,9 @@
         "Royal Challengers Bengaluru": { abbr: "RCB", color: "#ec1c24", alias: "Bangalore" },
         "Rajasthan Royals": { abbr: "RR", color: "#ea1a85" }
     };
+
+    const abbrToFullName = {};
+    Object.keys(teamData).forEach(k => { abbrToFullName[teamData[k].abbr] = k; });
 
     const matches = [
         { id: 1, date: "28-MAR-26", h: "Royal Challengers Bengaluru", a: "Sunrisers Hyderabad" },
@@ -446,12 +453,23 @@
         const input = document.getElementById('chat-input');
         const text = input.value.trim();
         if(!text) return;
-        const time = new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-        const newMsgKey = db.ref('ipl_battle_2026/chat').push().key;
-        db.ref(`ipl_battle_2026/chat/${newMsgKey}`).set({
-            sender: myId, text: text, time: time, timestamp: Date.now()
+        
+        db.ref('ipl_battle_2026/chat').once('value', snap => {
+            const currentChat = snap.val() || {};
+            const chatKeys = Object.keys(currentChat).sort((a,b) => currentChat[a].timestamp - currentChat[b].timestamp);
+            if (chatKeys.length >= 10) {
+                const toDelete = chatKeys.length - 9;
+                for(let i=0; i < toDelete; i++) {
+                    db.ref(`ipl_battle_2026/chat/${chatKeys[i]}`).remove();
+                }
+            }
+            const time = new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const newMsgKey = db.ref('ipl_battle_2026/chat').push().key;
+            db.ref(`ipl_battle_2026/chat/${newMsgKey}`).set({
+                sender: myId, text: text, time: time, timestamp: Date.now()
+            });
+            input.value = '';
         });
-        input.value = '';
     }
 
     function updateChat(chatData) {
@@ -495,20 +513,40 @@
             const updates = {};
             updates[`results/${id}`] = res;
             if (res !== "RAIN" && p) {
-                if (p.p1 === res) updates['p1Score'] = (d.p1Score || 0) + 1;
-                if (p.p2 === res) updates['p2Score'] = (d.p2Score || 0) + 1;
+                const p1PickFull = abbrToFullName[p.p1] || p.p1;
+                const p2PickFull = abbrToFullName[p.p2] || p.p2;
+                if (p1PickFull === res) updates['p1Score'] = (d.p1Score || 0) + 1;
+                if (p2PickFull === res) updates['p2Score'] = (d.p2Score || 0) + 1;
             }
             db.ref('ipl_battle_2026').update(updates);
         });
         closeResolveModal();
     }
 
+    // THEMED NRR LOGIC
     function updateNRR(teamName) {
+        currentNRRTeam = teamName;
         const currentNRR = (currentData.nrr && currentData.nrr[teamName]) || '0.000';
-        const newNRR = prompt(`Update NRR for ${teamName}:`, currentNRR);
-        if (newNRR !== null && !isNaN(parseFloat(newNRR))) {
-            db.ref(`ipl_battle_2026/nrr/${teamName}`).set(newNRR);
-        }
+        document.getElementById('nrr-title').innerText = `Update NRR for ${teamName}`;
+        document.getElementById('nrr-input').value = currentNRR;
+        document.getElementById('nrr-modal').style.display = 'block';
+        
+        document.getElementById('nrr-save').onclick = () => {
+            const val = document.getElementById('nrr-input').value;
+            if (val !== "" && !isNaN(parseFloat(val))) {
+                db.ref(`ipl_battle_2026/nrr/${currentNRRTeam}`).set(parseFloat(val).toFixed(3));
+                closeNRRModal();
+            }
+        };
+    }
+
+    function closeNRRModal() {
+        document.getElementById('nrr-modal').style.display = 'none';
+        currentNRRTeam = null;
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirm-modal').style.display = 'none';
     }
 
     function matchesQuery(teamName, query) {
@@ -533,6 +571,14 @@
         t.innerText = msg;
         t.style.display = 'block';
         setTimeout(() => { t.style.display = 'none'; }, 2000);
+    }
+
+    function getMatchStartTime(matchId, dateStr) {
+        const [d, mon, y] = dateStr.split('-');
+        const months = { 'MAR': '03', 'APR': '04', 'MAY': '05' };
+        const afternoonIds = [8, 9, 10, 11, 17, 18, 19, 20, 26, 27, 28, 29, 35, 36, 37, 38, 45, 46, 53, 54, 61, 62, 69, 70];
+        const time = afternoonIds.includes(matchId) ? "15:30" : "19:30";
+        return new Date(`20${y}-${months[mon]}-${d}T${time}:00`);
     }
 
     function render(data) {
@@ -568,8 +614,9 @@
                 teamHistory[res].push('W'); teamHistory[res === m.h ? m.a : m.h].push('L');
                 if (m.h.includes("Hyderabad") || m.a.includes("Hyderabad")) srhH.push(res.includes("Hyderabad") ? 'W' : 'L');
                 if (m.h.includes("Kolkata") || m.a.includes("Kolkata")) kkrH.push(res.includes("Kolkata") ? 'W' : 'L');
-                const myPick = picks[m.id] ? picks[m.id][myId] : null;
-                if(myPick) userH.push(myPick === res ? 'W' : 'L');
+                const rawPick = picks[m.id] ? picks[m.id][myId] : null;
+                const myPickFull = abbrToFullName[rawPick] || rawPick;
+                if(myPickFull) userH.push(myPickFull === res ? 'W' : 'L');
             }
         });
 
@@ -612,22 +659,27 @@
             const hData = teamData[m.h];
             const aData = teamData[m.a];
             
-            // Match Start Logic (Time-based lock)
-            const matchDateObj = new Date(m.date + " 19:30"); // Assumes 7:30 PM starts
+            const matchDateObj = getMatchStartTime(m.id, m.date);
             const timeLocked = now > matchDateObj;
             
-            const isLocked = (pick[myId] || timeLocked) ? 'locked-pick' : '';
-            const winnerClass = win && pick[myId] === win ? 'winner-glow' : '';
-            let state = win ? (pick[myId] === win ? 'finished-win' : (win === 'RAIN' ? '' : 'finished-loss')) : '';
+            const isLocked = (pick[myId]) ? 'locked-pick' : '';
+            const p1HasMatch = pick.p1 === hData.abbr || pick.p1 === m.h;
+            const p2HasMatch = pick.p2 === hData.abbr || pick.p2 === m.h;
+            const p1HasAway = pick.p1 === aData.abbr || pick.p1 === m.a;
+            const p2HasAway = pick.p2 === aData.abbr || pick.p2 === m.a;
+
+            const myPickFull = abbrToFullName[pick[myId]] || pick[myId];
+            const winnerClass = win && myPickFull === win ? 'winner-glow' : '';
+            let state = win ? (myPickFull === win ? 'finished-win' : (win === 'RAIN' ? '' : 'finished-loss')) : '';
             
-            const lockLabel = timeLocked ? '🕒 STARTED' : (pick[myId] ? '🔒 LOCKED' : '');
+            const lockLabel = timeLocked && !pick[myId] ? '🕒 STARTED' : (pick[myId] ? '🔒 LOCKED' : '');
             
             return `
                 <div id="match-${m.id}" class="match-card ${state} ${winnerClass}" style="--team-glow: ${hData.color}44; --glow-color: ${hData.color}">
                     <div class="label" style="font-size:0.6rem; color:#9ca3af">Match ${m.id} • ${m.date} ${lockLabel}</div>
                     <div class="team-row">
-                        <button class="team-btn ${pick.p1===m.h?'p1-picked':''} ${pick.p2===m.h?'p2-picked':''} ${isLocked}" onclick="makePick(${m.id},'${m.h}','${m.a}')">${hData.abbr}</button>
-                        <button class="team-btn ${pick.p1===m.a?'p1-picked':''} ${pick.p2===m.a?'p2-picked':''} ${isLocked}" onclick="makePick(${m.id},'${m.a}','${m.h}')">${aData.abbr}</button>
+                        <button class="team-btn ${p1HasMatch?'p1-picked':''} ${p2HasMatch?'p2-picked':''} ${isLocked}" onclick="makePick(${m.id},'${hData.abbr}','${aData.abbr}')">${hData.abbr}</button>
+                        <button class="team-btn ${p1HasAway?'p1-picked':''} ${p2HasAway?'p2-picked':''} ${isLocked}" onclick="makePick(${m.id},'${aData.abbr}','${hData.abbr}')">${aData.abbr}</button>
                     </div>
                     <button class="result-btn" ${win ? 'disabled' : ''} onclick="openResolveModal(${m.id},'${m.h}','${m.a}')">
                         ${win ? (win === 'RAIN' ? 'RAIN/NO RESULT' : 'WINNER: ' + teamData[win].abbr) : 'DECLARE WINNER'}
@@ -643,28 +695,35 @@
         window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
-    function makePick(id, sel, oth) {
+    // THEMED PICK LOGIC
+    function makePick(id, selAbbr, othAbbr) {
         const match = matches.find(m => m.id === id);
-        const matchStartTime = new Date(match.date + " 19:30");
+        const matchStartTime = getMatchStartTime(match.id, match.date);
         const currentTime = new Date();
+        const isLate = currentTime > matchStartTime;
 
-        // Check 1: Time Lock (Match already started)
-        if (currentTime > matchStartTime) {
-            showToast("ALREADY STARTED! 🕒");
-            return;
-        }
-
-        // Check 2: Hard Lock (Selection already made)
         if(currentData.picks && currentData.picks[id] && currentData.picks[id][myId]) {
             return; 
         }
 
-        const otherId = myId === 'p1' ? 'p2' : 'p1';
-        const updates = {};
-        updates[`picks/${id}/${myId}`] = sel;
-        updates[`picks/${id}/${otherId}`] = oth;
-        db.ref('ipl_battle_2026').update(updates);
-        showToast("PICK LOCKED! 🔒");
+        const executePick = (isLateReported) => {
+            const otherId = myId === 'p1' ? 'p2' : 'p1';
+            const updates = {};
+            updates[`picks/${id}/${myId}`] = selAbbr;
+            updates[`picks/${id}/${otherId}`] = othAbbr;
+            db.ref('ipl_battle_2026').update(updates);
+            showToast(isLateReported ? "LATE PICK ACCEPTED! 🤝" : "PICK LOCKED! 🔒");
+        };
+
+        if (isLate) {
+            document.getElementById('confirm-modal').style.display = 'block';
+            document.getElementById('confirm-yes').onclick = () => {
+                executePick(true);
+                closeConfirmModal();
+            };
+        } else {
+            executePick(false);
+        }
     }
 
     function resetData() {
