@@ -698,6 +698,7 @@
         }).join('');
 
         const now = new Date();
+        const getTimeStr = (id) => [8, 9, 10, 11, 17, 18, 19, 20, 26, 27, 28, 29, 35, 36, 37, 38, 45, 46, 53, 54, 61, 62, 69, 70].includes(id) ? "15:30" : "19:30";
         document.getElementById('grid').innerHTML = matches
         .filter(m => matchesQuery(m.h, searchTerm) || matchesQuery(m.a, searchTerm))
         .map(m => {
@@ -723,7 +724,7 @@
             
             return `
                 <div id="match-${m.id}" class="match-card ${state} ${winnerClass}" style="--team-glow: ${hData.color}44; --glow-color: ${hData.color}">
-                    <div class="label" style="font-size:0.6rem; color:#9ca3af">Match ${m.id} • ${m.date} ${lockLabel}</div>
+                    <div class="label" style="font-size:0.6rem; color:#9ca3af">Match ${m.id} • ${m.date} • ${getTimeStr(m.id)} ${lockLabel}</div>
                     <div class="team-row">
                         <button class="team-btn ${p1HasMatch?'p1-picked':''} ${p2HasMatch?'p2-picked':''} ${isLocked}" onclick="makePick(${m.id},'${hData.abbr}','${aData.abbr}')">${hData.abbr}</button>
                         <button class="team-btn ${p1HasAway?'p1-picked':''} ${p2HasAway?'p2-picked':''} ${isLocked}" onclick="makePick(${m.id},'${aData.abbr}','${hData.abbr}')">${aData.abbr}</button>
