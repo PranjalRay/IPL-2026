@@ -218,7 +218,7 @@
 </head>
 <body>
 
-<div id="toast">PICK LOCKED! 🔒</div>
+<div id="toast">PICK UPDATED! ✅</div>
 
 <div id="emoji-modal" class="modal">
     <div class="label" id="picker-title">Select Avatar</div>
@@ -378,76 +378,76 @@
     Object.keys(teamData).forEach(k => { abbrToFullName[teamData[k].abbr] = k; });
 
     const matches = [
-        { id: 1, date: "28-MAR-26", h: "Royal Challengers Bengaluru", a: "Sunrisers Hyderabad" },
-        { id: 2, date: "29-MAR-26", h: "Mumbai Indians", a: "Kolkata Knight Riders" },
-        { id: 3, date: "30-MAR-26", h: "Rajasthan Royals", a: "Chennai Super Kings" },
-        { id: 4, date: "31-MAR-26", h: "Punjab Kings", a: "Gujarat Titans" },
-        { id: 5, date: "01-APR-26", h: "Lucknow Super Giants", a: "Delhi Capitals" },
-        { id: 6, date: "02-APR-26", h: "Kolkata Knight Riders", a: "Sunrisers Hyderabad" },
-        { id: 7, date: "03-APR-26", h: "Chennai Super Kings", a: "Punjab Kings" },
-        { id: 8, date: "04-APR-26", h: "Delhi Capitals", a: "Mumbai Indians" },
-        { id: 9, date: "04-APR-26", h: "Gujarat Titans", a: "Rajasthan Royals" },
-        { id: 10, date: "05-APR-26", h: "Sunrisers Hyderabad", a: "Lucknow Super Giants" },
-        { id: 11, date: "05-APR-26", h: "Royal Challengers Bengaluru", a: "Chennai Super Kings" },
-        { id: 12, date: "06-APR-26", h: "Kolkata Knight Riders", a: "Punjab Kings" },
-        { id: 13, date: "07-APR-26", h: "Rajasthan Royals", a: "Mumbai Indians" },
-        { id: 14, date: "08-APR-26", h: "Delhi Capitals", a: "Gujarat Titans" },
-        { id: 15, date: "09-APR-26", h: "Kolkata Knight Riders", a: "Lucknow Super Giants" },
-        { id: 16, date: "10-APR-26", h: "Rajasthan Royals", a: "Royal Challengers Bengaluru" },
-        { id: 17, date: "11-APR-26", h: "Punjab Kings", a: "Sunrisers Hyderabad" },
-        { id: 18, date: "11-APR-26", h: "Chennai Super Kings", a: "Delhi Capitals" },
-        { id: 19, date: "12-APR-26", h: "Lucknow Super Giants", a: "Gujarat Titans" },
-        { id: 20, date: "12-APR-26", h: "Mumbai Indians", a: "Royal Challengers Bengaluru" },
-        { id: 21, date: "13-APR-26", h: "Sunrisers Hyderabad", a: "Rajasthan Royals" },
-        { id: 22, date: "14-APR-26", h: "Chennai Super Kings", a: "Kolkata Knight Riders" },
-        { id: 23, date: "15-APR-26", h: "Royal Challengers Bengaluru", a: "Lucknow Super Giants" },
-        { id: 24, date: "16-APR-26", h: "Mumbai Indians", a: "Punjab Kings" },
-        { id: 25, date: "17-APR-26", h: "Gujarat Titans", a: "Kolkata Knight Riders" },
-        { id: 26, date: "18-APR-26", h: "Royal Challengers Bengaluru", a: "Delhi Capitals" },
-        { id: 27, date: "18-APR-26", h: "Sunrisers Hyderabad", a: "Chennai Super Kings" },
-        { id: 28, date: "19-APR-26", h: "Kolkata Knight Riders", a: "Rajasthan Royals" },
-        { id: 29, date: "19-APR-26", h: "Punjab Kings", a: "Lucknow Super Giants" },
-        { id: 30, date: "20-APR-26", h: "Gujarat Titans", a: "Mumbai Indians" },
-        { id: 31, date: "21-APR-26", h: "Sunrisers Hyderabad", a: "Delhi Capitals" },
-        { id: 32, date: "22-APR-26", h: "Lucknow Super Giants", a: "Rajasthan Royals" },
-        { id: 33, date: "23-APR-26", h: "Mumbai Indians", a: "Chennai Super Kings" },
-        { id: 34, date: "24-APR-26", h: "Royal Challengers Bengaluru", a: "Gujarat Titans" },
-        { id: 35, date: "25-APR-26", h: "Delhi Capitals", a: "Punjab Kings" },
-        { id: 36, date: "25-APR-26", h: "Rajasthan Royals", a: "Sunrisers Hyderabad" },
-        { id: 37, date: "26-APR-26", h: "Gujarat Titans", a: "Chennai Super Kings" },
-        { id: 38, date: "26-APR-26", h: "Lucknow Super Giants", a: "Kolkata Knight Riders" },
-        { id: 39, date: "27-APR-26", h: "Delhi Capitals", a: "Royal Challengers Bengaluru" },
-        { id: 40, date: "28-APR-26", h: "Punjab Kings", a: "Rajasthan Royals" },
-        { id: 41, date: "29-APR-26", h: "Mumbai Indians", a: "Sunrisers Hyderabad" },
-        { id: 42, date: "30-APR-26", h: "Gujarat Titans", a: "Royal Challengers Bengaluru" },
-        { id: 43, date: "01-MAY-26", h: "Rajasthan Royals", a: "Delhi Capitals" },
-        { id: 44, date: "02-MAY-26", h: "Chennai Super Kings", a: "Mumbai Indians" },
-        { id: 45, date: "03-MAY-26", h: "Sunrisers Hyderabad", a: "Kolkata Knight Riders" },
-        { id: 46, date: "03-MAY-26", h: "Gujarat Titans", a: "Punjab Kings" },
-        { id: 47, date: "04-MAY-26", h: "Mumbai Indians", a: "Lucknow Super Giants" },
-        { id: 48, date: "05-MAY-26", h: "Delhi Capitals", a: "Chennai Super Kings" },
-        { id: 49, date: "06-MAY-26", h: "Sunrisers Hyderabad", a: "Punjab Kings" },
-        { id: 50, date: "07-MAY-26", h: "Lucknow Super Giants", a: "Royal Challengers Bengaluru" },
-        { id: 51, date: "08-MAY-26", h: "Delhi Capitals", a: "Kolkata Knight Riders" },
-        { id: 52, date: "09-MAY-26", h: "Rajasthan Royals", a: "Gujarat Titans" },
-        { id: 53, date: "10-MAY-26", h: "Chennai Super Kings", a: "Lucknow Super Giants" },
-        { id: 54, date: "10-MAY-26", h: "Royal Challengers Bengaluru", a: "Mumbai Indians" },
-        { id: 55, date: "11-MAY-26", h: "Punjab Kings", a: "Delhi Capitals" },
-        { id: 56, date: "12-MAY-26", h: "Gujarat Titans", a: "Sunrisers Hyderabad" },
-        { id: 57, date: "13-MAY-26", h: "Royal Challengers Bengaluru", a: "Kolkata Knight Riders" },
-        { id: 58, date: "14-MAY-26", h: "Punjab Kings", a: "Mumbai Indians" },
-        { id: 59, date: "15-MAY-26", h: "Lucknow Super Giants", a: "Chennai Super Kings" },
-        { id: 60, date: "16-MAY-26", h: "Kolkata Knight Riders", a: "Gujarat Titans" },
-        { id: 61, date: "17-MAY-26", h: "Punjab Kings", a: "Royal Challengers Bengaluru" },
-        { id: 62, date: "17-MAY-26", h: "Delhi Capitals", a: "Rajasthan Royals" },
-        { id: 63, date: "18-MAY-26", h: "Chennai Super Kings", a: "Sunrisers Hyderabad" },
-        { id: 64, date: "19-MAY-26", h: "Rajasthan Royals", a: "Lucknow Super Giants" },
-        { id: 65, date: "20-MAY-26", h: "Kolkata Knight Riders", a: "Mumbai Indians" },
-        { id: 66, date: "21-MAY-26", h: "Chennai Super Kings", a: "Gujarat Titans" },
-        { id: 67, date: "22-MAY-26", h: "Sunrisers Hyderabad", a: "Royal Challengers Bengaluru" },
-        { id: 68, date: "23-MAY-26", h: "Lucknow Super Giants", a: "Punjab Kings" },
-        { id: 69, date: "24-MAY-26", h: "Mumbai Indians", a: "Rajasthan Royals" },
-        { id: 70, date: "24-MAY-26", h: "Kolkata Knight Riders", a: "Delhi Capitals" }
+        { id: 1, date: "28-MAR-26", time: "19:30", h: "Royal Challengers Bengaluru", a: "Sunrisers Hyderabad" },
+        { id: 2, date: "29-MAR-26", time: "19:30", h: "Mumbai Indians", a: "Kolkata Knight Riders" },
+        { id: 3, date: "30-MAR-26", time: "19:30", h: "Rajasthan Royals", a: "Chennai Super Kings" },
+        { id: 4, date: "31-MAR-26", time: "19:30", h: "Punjab Kings", a: "Gujarat Titans" },
+        { id: 5, date: "01-APR-26", time: "19:30", h: "Lucknow Super Giants", a: "Delhi Capitals" },
+        { id: 6, date: "02-APR-26", time: "19:30", h: "Kolkata Knight Riders", a: "Sunrisers Hyderabad" },
+        { id: 7, date: "03-APR-26", time: "19:30", h: "Chennai Super Kings", a: "Punjab Kings" },
+        { id: 8, date: "04-APR-26", time: "15:30", h: "Delhi Capitals", a: "Mumbai Indians" },
+        { id: 9, date: "04-APR-26", time: "19:30", h: "Gujarat Titans", a: "Rajasthan Royals" },
+        { id: 10, date: "05-APR-26", time: "15:30", h: "Sunrisers Hyderabad", a: "Lucknow Super Giants" },
+        { id: 11, date: "05-APR-26", time: "19:30", h: "Royal Challengers Bengaluru", a: "Chennai Super Kings" },
+        { id: 12, date: "06-APR-26", time: "19:30", h: "Kolkata Knight Riders", a: "Punjab Kings" },
+        { id: 13, date: "07-APR-26", time: "19:30", h: "Rajasthan Royals", a: "Mumbai Indians" },
+        { id: 14, date: "08-APR-26", time: "19:30", h: "Delhi Capitals", a: "Gujarat Titans" },
+        { id: 15, date: "09-APR-26", time: "19:30", h: "Kolkata Knight Riders", a: "Lucknow Super Giants" },
+        { id: 16, date: "10-APR-26", time: "19:30", h: "Rajasthan Royals", a: "Royal Challengers Bengaluru" },
+        { id: 17, date: "11-APR-26", time: "15:30", h: "Punjab Kings", a: "Sunrisers Hyderabad" },
+        { id: 18, date: "11-APR-26", time: "19:30", h: "Chennai Super Kings", a: "Delhi Capitals" },
+        { id: 19, date: "12-APR-26", time: "15:30", h: "Lucknow Super Giants", a: "Gujarat Titans" },
+        { id: 20, date: "12-APR-26", time: "19:30", h: "Mumbai Indians", a: "Royal Challengers Bengaluru" },
+        { id: 21, date: "13-APR-26", time: "19:30", h: "Sunrisers Hyderabad", a: "Rajasthan Royals" },
+        { id: 22, date: "14-APR-26", time: "19:30", h: "Chennai Super Kings", a: "Kolkata Knight Riders" },
+        { id: 23, date: "15-APR-26", time: "19:30", h: "Royal Challengers Bengaluru", a: "Lucknow Super Giants" },
+        { id: 24, date: "16-APR-26", time: "19:30", h: "Mumbai Indians", a: "Punjab Kings" },
+        { id: 25, date: "17-APR-26", time: "19:30", h: "Gujarat Titans", a: "Kolkata Knight Riders" },
+        { id: 26, date: "18-APR-26", time: "15:30", h: "Royal Challengers Bengaluru", a: "Delhi Capitals" },
+        { id: 27, date: "18-APR-26", time: "19:30", h: "Sunrisers Hyderabad", a: "Chennai Super Kings" },
+        { id: 28, date: "19-APR-26", time: "15:30", h: "Kolkata Knight Riders", a: "Rajasthan Royals" },
+        { id: 29, date: "19-APR-26", time: "19:30", h: "Punjab Kings", a: "Lucknow Super Giants" },
+        { id: 30, date: "20-APR-26", time: "19:30", h: "Gujarat Titans", a: "Mumbai Indians" },
+        { id: 31, date: "21-APR-26", time: "19:30", h: "Sunrisers Hyderabad", a: "Delhi Capitals" },
+        { id: 32, date: "22-APR-26", time: "19:30", h: "Lucknow Super Giants", a: "Rajasthan Royals" },
+        { id: 33, date: "23-APR-26", time: "19:30", h: "Mumbai Indians", a: "Chennai Super Kings" },
+        { id: 34, date: "24-APR-26", time: "19:30", h: "Royal Challengers Bengaluru", a: "Gujarat Titans" },
+        { id: 35, date: "25-APR-26", time: "15:30", h: "Delhi Capitals", a: "Punjab Kings" },
+        { id: 36, date: "25-APR-26", time: "19:30", h: "Rajasthan Royals", a: "Sunrisers Hyderabad" },
+        { id: 37, date: "26-APR-26", time: "15:30", h: "Gujarat Titans", a: "Chennai Super Kings" },
+        { id: 38, date: "26-APR-26", time: "19:30", h: "Lucknow Super Giants", a: "Kolkata Knight Riders" },
+        { id: 39, date: "27-APR-26", time: "19:30", h: "Delhi Capitals", a: "Royal Challengers Bengaluru" },
+        { id: 40, date: "28-APR-26", time: "19:30", h: "Punjab Kings", a: "Rajasthan Royals" },
+        { id: 41, date: "29-APR-26", time: "19:30", h: "Mumbai Indians", a: "Sunrisers Hyderabad" },
+        { id: 42, date: "30-APR-26", time: "19:30", h: "Gujarat Titans", a: "Royal Challengers Bengaluru" },
+        { id: 43, date: "01-MAY-26", time: "19:30", h: "Rajasthan Royals", a: "Delhi Capitals" },
+        { id: 44, date: "02-MAY-26", time: "19:30", h: "Chennai Super Kings", a: "Mumbai Indians" },
+        { id: 45, date: "03-MAY-26", time: "15:30", h: "Sunrisers Hyderabad", a: "Kolkata Knight Riders" },
+        { id: 46, date: "03-MAY-26", time: "19:30", h: "Gujarat Titans", a: "Punjab Kings" },
+        { id: 47, date: "04-MAY-26", time: "19:30", h: "Mumbai Indians", a: "Lucknow Super Giants" },
+        { id: 48, date: "05-MAY-26", time: "19:30", h: "Delhi Capitals", a: "Chennai Super Kings" },
+        { id: 49, date: "06-MAY-26", time: "19:30", h: "Sunrisers Hyderabad", a: "Punjab Kings" },
+        { id: 50, date: "07-MAY-26", time: "19:30", h: "Lucknow Super Giants", a: "Royal Challengers Bengaluru" },
+        { id: 51, date: "08-MAY-26", time: "19:30", h: "Delhi Capitals", a: "Kolkata Knight Riders" },
+        { id: 52, date: "09-MAY-26", time: "19:30", h: "Rajasthan Royals", a: "Gujarat Titans" },
+        { id: 53, date: "10-MAY-26", time: "15:30", h: "Chennai Super Kings", a: "Lucknow Super Giants" },
+        { id: 54, date: "10-MAY-26", time: "19:30", h: "Royal Challengers Bengaluru", a: "Mumbai Indians" },
+        { id: 55, date: "11-MAY-26", time: "19:30", h: "Punjab Kings", a: "Delhi Capitals" },
+        { id: 56, date: "12-MAY-26", time: "19:30", h: "Gujarat Titans", a: "Sunrisers Hyderabad" },
+        { id: 57, date: "13-MAY-26", time: "19:30", h: "Royal Challengers Bengaluru", a: "Kolkata Knight Riders" },
+        { id: 58, date: "14-MAY-26", time: "19:30", h: "Punjab Kings", a: "Mumbai Indians" },
+        { id: 59, date: "15-MAY-26", time: "19:30", h: "Lucknow Super Giants", a: "Chennai Super Kings" },
+        { id: 60, date: "16-MAY-26", time: "19:30", h: "Kolkata Knight Riders", a: "Gujarat Titans" },
+        { id: 61, date: "17-MAY-26", time: "15:30", h: "Punjab Kings", a: "Royal Challengers Bengaluru" },
+        { id: 62, date: "17-MAY-26", time: "19:30", h: "Delhi Capitals", a: "Rajasthan Royals" },
+        { id: 63, date: "18-MAY-26", time: "19:30", h: "Chennai Super Kings", a: "Sunrisers Hyderabad" },
+        { id: 64, date: "19-MAY-26", time: "19:30", h: "Rajasthan Royals", a: "Lucknow Super Giants" },
+        { id: 65, date: "20-MAY-26", time: "19:30", h: "Kolkata Knight Riders", a: "Mumbai Indians" },
+        { id: 66, date: "21-MAY-26", time: "19:30", h: "Chennai Super Kings", a: "Gujarat Titans" },
+        { id: 67, date: "22-MAY-26", time: "19:30", h: "Sunrisers Hyderabad", a: "Royal Challengers Bengaluru" },
+        { id: 68, date: "23-MAY-26", time: "19:30", h: "Lucknow Super Giants", a: "Punjab Kings" },
+        { id: 69, date: "24-MAY-26", time: "15:30", h: "Mumbai Indians", a: "Rajasthan Royals" },
+        { id: 70, date: "24-MAY-26", time: "19:30", h: "Kolkata Knight Riders", a: "Delhi Capitals" }
     ];
 
     let currentData = {};
@@ -570,7 +570,6 @@
         closeResolveModal();
     }
 
-    // THEMED NRR LOGIC
     function updateNRR(teamName) {
         currentNRRTeam = teamName;
         const currentNRR = (currentData.nrr && currentData.nrr[teamName]) || '0.000';
@@ -613,19 +612,17 @@
         }
     }
 
-    function showToast(msg = 'PICK LOCKED! 🔒') {
+    function showToast(msg = 'PICK UPDATED! ✅') {
         const t = document.getElementById('toast');
         t.innerText = msg;
         t.style.display = 'block';
         setTimeout(() => { t.style.display = 'none'; }, 2000);
     }
 
-    function getMatchStartTime(matchId, dateStr) {
-        const [d, mon, y] = dateStr.split('-');
+    function getMatchStartTime(match) {
+        const [d, mon, y] = match.date.split('-');
         const months = { 'MAR': '03', 'APR': '04', 'MAY': '05' };
-        const afternoonIds = [8, 9, 10, 11, 17, 18, 19, 20, 26, 27, 28, 29, 35, 36, 37, 38, 45, 46, 53, 54, 61, 62, 69, 70];
-        const time = afternoonIds.includes(matchId) ? "15:30" : "19:30";
-        return new Date(`20${y}-${months[mon]}-${d}T${time}:00`);
+        return new Date(`20${y}-${months[mon]}-${d}T${match.time}:00`);
     }
 
     function render(data) {
@@ -698,7 +695,6 @@
         }).join('');
 
         const now = new Date();
-        const getTimeStr = (id) => [8, 9, 10, 11, 17, 18, 19, 20, 26, 27, 28, 29, 35, 36, 37, 38, 45, 46, 53, 54, 61, 62, 69, 70].includes(id) ? "15:30" : "19:30";
         document.getElementById('grid').innerHTML = matches
         .filter(m => matchesQuery(m.h, searchTerm) || matchesQuery(m.a, searchTerm))
         .map(m => {
@@ -707,10 +703,11 @@
             const hData = teamData[m.h];
             const aData = teamData[m.a];
             
-            const matchDateObj = getMatchStartTime(m.id, m.date);
+            const matchDateObj = getMatchStartTime(m);
             const timeLocked = now > matchDateObj;
             
-            const isLocked = (pick[myId]) ? 'locked-pick' : '';
+            const isLocked = timeLocked ? 'locked-pick' : '';
+            
             const p1HasMatch = pick.p1 === hData.abbr || pick.p1 === m.h;
             const p2HasMatch = pick.p2 === hData.abbr || pick.p2 === m.h;
             const p1HasAway = pick.p1 === aData.abbr || pick.p1 === m.a;
@@ -720,11 +717,11 @@
             const winnerClass = win && myPickFull === win ? 'winner-glow' : '';
             let state = win ? (myPickFull === win ? 'finished-win' : (win === 'RAIN' ? '' : 'finished-loss')) : '';
             
-            const lockLabel = timeLocked && !pick[myId] ? '🕒 STARTED' : (pick[myId] ? '🔒 LOCKED' : '');
+            const lockLabel = timeLocked ? '🕒 LOCKED' : (pick[myId] ? '✅ PICKED' : '⏳ OPEN');
             
             return `
                 <div id="match-${m.id}" class="match-card ${state} ${winnerClass}" style="--team-glow: ${hData.color}44; --glow-color: ${hData.color}">
-                    <div class="label" style="font-size:0.6rem; color:#9ca3af">Match ${m.id} • ${m.date} • ${getTimeStr(m.id)} ${lockLabel}</div>
+                    <div class="label" style="font-size:0.6rem; color:#9ca3af">Match ${m.id} • ${m.date} • ${m.time} ${lockLabel}</div>
                     <div class="team-row">
                         <button class="team-btn ${p1HasMatch?'p1-picked':''} ${p2HasMatch?'p2-picked':''} ${isLocked}" onclick="makePick(${m.id},'${hData.abbr}','${aData.abbr}')">${hData.abbr}</button>
                         <button class="team-btn ${p1HasAway?'p1-picked':''} ${p2HasAway?'p2-picked':''} ${isLocked}" onclick="makePick(${m.id},'${aData.abbr}','${hData.abbr}')">${aData.abbr}</button>
@@ -743,16 +740,11 @@
         window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
-    // THEMED PICK LOGIC
     function makePick(id, selAbbr, othAbbr) {
         const match = matches.find(m => m.id === id);
-        const matchStartTime = getMatchStartTime(match.id, match.date);
+        const matchStartTime = getMatchStartTime(match);
         const currentTime = new Date();
         const isLate = currentTime > matchStartTime;
-
-        if(currentData.picks && currentData.picks[id] && currentData.picks[id][myId]) {
-            return; 
-        }
 
         const executePick = (isLateReported) => {
             const otherId = myId === 'p1' ? 'p2' : 'p1';
@@ -760,7 +752,7 @@
             updates[`picks/${id}/${myId}`] = selAbbr;
             updates[`picks/${id}/${otherId}`] = othAbbr;
             db.ref('ipl_battle_2026').update(updates);
-            showToast(isLateReported ? "LATE PICK ACCEPTED! 🤝" : "PICK LOCKED! 🔒");
+            showToast(isLateReported ? "LATE PICK ACCEPTED! 🤝" : "PICK UPDATED! ✅");
         };
 
         if (isLate) {
