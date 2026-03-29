@@ -718,6 +718,10 @@
             let state = win ? (myPickFull === win ? 'finished-win' : (win === 'RAIN' ? '' : 'finished-loss')) : '';
             
             const lockLabel = timeLocked ? '🕒 LOCKED' : (pick[myId] ? '✅ PICKED' : '⏳ OPEN');
+
+            // Logic to determine winner box color and text contrast
+            const teamWinData = (win && win !== 'RAIN') ? teamData[win] : null;
+            const winStyle = teamWinData ? `style="background: ${teamWinData.color}; color: ${teamWinData.color === '#ffff00' ? '#000' : '#fff'}; opacity: 1;"` : '';
             
             return `
                 <div id="match-${m.id}" class="match-card ${state} ${winnerClass}" style="--team-glow: ${hData.color}44; --glow-color: ${hData.color}">
@@ -726,7 +730,7 @@
                         <button class="team-btn ${p1HasMatch?'p1-picked':''} ${p2HasMatch?'p2-picked':''} ${isLocked}" onclick="makePick(${m.id},'${hData.abbr}','${aData.abbr}')">${hData.abbr}</button>
                         <button class="team-btn ${p1HasAway?'p1-picked':''} ${p2HasAway?'p2-picked':''} ${isLocked}" onclick="makePick(${m.id},'${aData.abbr}','${hData.abbr}')">${aData.abbr}</button>
                     </div>
-                    <button class="result-btn" ${win ? 'disabled' : ''} onclick="openResolveModal(${m.id},'${m.h}','${m.a}')">
+                    <button class="result-btn" ${win ? 'disabled' : ''} ${winStyle} onclick="openResolveModal(${m.id},'${m.h}','${m.a}')">
                         ${win ? (win === 'RAIN' ? 'RAIN/NO RESULT' : 'WINNER: ' + teamData[win].abbr) : 'DECLARE WINNER'}
                     </button>
                 </div>
